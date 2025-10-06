@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Trade Visit – Excelissia</title>
+<style>
+  :root{
+    --brand:#0b3d91; --ink:#111; --muted:#666;
+    --card:#fafafa; --line:#ccc; --chip:#fff; --chip-b:#bbb;
+    --danger:#d32f2f;
+  }
+  *{box-sizing:border-box}
+  body{background:#fff;font-family:Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);margin:0;padding:24px}
+  h1,h2{margin:0 0 12px 0;text-align:center;color:var(--brand)}
+  .section{border:1px solid var(--line);border-radius:12px;padding:18px;margin:0 auto 20px auto;max-width:1150px;background:var(--card)}
+  .row{display:flex;flex-wrap:wrap;gap:14px}
+  .field{flex:1 1 260px;min-width:220px}
+  label{display:block;margin-bottom:6px;font-weight:600}
+  input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#000}
+  textarea{min-height:90px}
+  .choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--chip-b);border-radius:12px;background:var(--chip);cursor:pointer;user-select:none}
+  .chip.selected{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .btn{background:var(--brand);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+  .btn-ghost{background:transparent;border:1px dashed var(--brand);color:var(--brand)}
+  .hidden{display:none}
+  .help{font-size:12px;color:var(--muted);margin-top:4px}
+  hr.sep{border:none;border-top:1px dashed var(--line);margin:10px 0}
+  .visit{border:1px dashed var(--line);border-radius:12px;background:#fff;margin-top:14px;overflow:hidden}
+  .visit-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f3f6ff;border-bottom:1px dashed var(--line);cursor:pointer}
+  .visit-title{font-weight:700;color:var(--brand)}
+  .visit-body{padding:12px}
+  .btn-remove{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer}
+  .readonly{background:#eee;cursor:not-allowed}
+  /* “BU style” pour le bloc livreur */
+  .vendor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+  .vendor-field{display:flex;align-items:center;gap:10px;background:#f0f4ff;border:1px dashed var(--line);border-radius:8px;padding:8px}
+  .vendor-field .main{font-weight:700;min-width:120px;color:var(--brand)}
+  .vendor-field .hint{font-size:12px;color:#223}
+/* Style d’erreur plus subtil : ligne rouge uniquement en bas */
+.field.error select,
+.field.error .choices {
+  border: none !important;
+  border-bottom: 2px solid #d32f2f !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.field.error label {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+
+</style>
+</head>
+<body>
+<h1>Questionnaire Terrain</h1>
+
+<form id="questionnaire" autocomplete="off">
+
+  <!-- ====================== SECTION 1 ====================== -->
+  <div class="section s1">
+    <h2>Section 1 – Ouverture Journée</h2>
+    <div class="row">
+     <div class="field">
+  <label>Date du jour</label>
+  <input type="date" id="datejour" readonly class="readonly">
+  <div class="help">Date automatique – non modifiable</div>
+</div>
+
+      <div class="field">
+        <label>Résponsable</label>
+        <input type="text" id="nomdev" required placeholder="Nom et prénom">
+      </div>
+      <div class="field">
+        <label>ID Journée</label>
+        <input type="text" id="idjournee" readonly class="readonly">
+        <div class="help">Généré automatiquement (Date_hour)</div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label>Site *</label>
+        <select id="site" required>
+          <option value="">-- Sélectionner --</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Secteur *</label>
+        <select id="secteur" required>
+          <option value="">-- Sélectionner --</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Tournée(s) *</label>
+      <div id="tournee-zone" class="choices"></div>
+      <div class="help">Touchez pour cocher/décocher une ou plusieurs tournées (format “chips” comme les BU).</div>
+    </div>
+
+    <div style="text-align:right;margin-top:8px">
+      <button type="button" class="btn" onclick="passerSection1()">Suivant ➜</button>
+    </div>
+  </div>
+
+  <!-- ====================== SECTION 2 ====================== -->
+  <div class="section s2 hidden">
+    <h2>Section 2 – Informations Générales</h2>
+<!-- Bloc Section 2 – Informations Générales réorganisé -->
+<div class="field">
+  <label>Business Unit(s) *</label>
+  <div id="bu_choices" class="choices">
+    <span class="chip interactive">EXCELO</span>
+    <span class="chip interactive">BE</span>
+    <span class="chip interactive">NEGOCE</span>
+    <span class="chip interactive">CHOCOLAT</span>
+  </div>
+  <div class="help">Sélection multiple autorisée.</div>
+</div>
+
+<div class="field">
+  <label>Méthode *</label>
+  <select id="methode" onchange="updateObjectifs()" required>
+    <option value="">-- Sélectionner --</option>
+    <option value="audit">Sortie Audit</option>
+    <option value="accompagnement">Accompagnement vendeur</option>
+  </select>
+</div>
+
+<div class="field">
+  <label>Objectif(s) terrain *</label>
+  <div id="objectifs_zone" class="choices"></div>
+</div>
+
+
+    <div style="text-align:right;margin-top:8px">
+      <button type="button" class="btn" onclick="verrouillerSections12()">Valider Section ➜</button>
+    </div>
+  </div>
+
+  <!-- ====================== SECTION 3 ====================== -->
+  <div class="section s3 hidden">
+    <div class="row" style="justify-content:space-between;align-items:center">
+      <h2>Section 3 – Visites</h2>
+      <button type="button" class="btn" onclick="ajouterVisite()">➕ Ajouter une visite</button>
+    </div>
+
+    <div id="visites"></div>
+
+    <div style="text-align:right;margin-top:16px">
+      <button class="btn" type="submit">Envoyer</button>
+    </div>
+  </div>
+
+</form>
+
+<script>
+/* ===========================================================
+   Utilitaires
+=========================================================== */
+function pad2(n){return n<10?'0'+n:''+n;}
+function genIdJournee(){
+  const d=new Date();
+  return d.getFullYear()+pad2(d.getMonth()+1)+pad2(d.getDate())+"_"+pad2(d.getHours())+pad2(d.getMinutes())+pad2(d.getSeconds());
+}
+(function initHeader(){
+  document.getElementById('idjournee').value=genIdJournee();
+  const d=new Date();document.getElementById('datejour').value=d.toISOString().substring(0,10);
+})();
+
+/* ===========================================================
+   Sites → Secteurs → Tournées (exemples réalistes)
+   (Format tournées en CHIPS cochables)
+=========================================================== */
+const cascade={
+  "CEN":{
+    "2MARS_SDMAAROUF":["ALMOSTAKBAL","DAMANE","EL HIDIOUIA","FLOURIDA","HOPITAUX"],
+    "ACHOCK_DBSULTAN":["AIN CHOK","BALADIA","BOUCHENTOUF","DERB CHORFA","KOREA"]
+  },
+  "AGA":{
+    "AGADIR_CENTRE":["CENTRE VILLE","DAKHLA","EL MASSIRA","JET SAKAN","TILILA"],
+    "AITMELOUL_DCHIERA":["AIT MELLOUL 1","AIT MELLOUL 2","DRARGA","INZEGAN 1","INZEGAN 2"]
+  },
+  "RAB":{
+    "RABAT_1":["AGDAL 1","AGDAL 2","OCEAN 1","HAY RIAD","KAMRA 1"],
+    "SALE_1":["HAY CHMAOU","HAY RAHMA","SAID HAJI","SIDI MOUSSA","MDINA SALE"]
+  }
+};
+
+const siteSel=document.getElementById('site');
+const secteurSel=document.getElementById('secteur');
+const tourneeZone=document.getElementById('tournee-zone');
+
+Object.keys(cascade).forEach(s=>siteSel.add(new Option(s,s)));
+
+siteSel.addEventListener('change', ()=>{
+  secteurSel.innerHTML='<option value="">-- Sélectionner --</option>';
+  tourneeZone.innerHTML='';
+  const sects=cascade[siteSel.value]||{};
+  Object.keys(sects).forEach(sec=>secteurSel.add(new Option(sec,sec)));
+});
+
+secteurSel.addEventListener('change', ()=>{
+  tourneeZone.innerHTML='';
+  const liste=(cascade[siteSel.value]?.[secteurSel.value])||[];
+  liste.forEach(name=>{
+    const chip=document.createElement('span');
+    chip.className='chip';
+    chip.textContent=name;
+    chip.dataset.value=name;
+    chip.addEventListener('click',()=> chip.classList.toggle('selected'));
+    tourneeZone.appendChild(chip);
+  });
+});
+
+/* ===========================================================
+   Section 2 – BU / Objectifs
+=========================================================== */
+document.querySelectorAll('.chip.interactive').forEach(c=>c.onclick=()=>c.classList.toggle('selected'));
+
+function updateObjectifs(){
+  const zone=document.getElementById('objectifs_zone');
+  zone.innerHTML='';
+  const data={
+    "audit":["TP","Clients inactifs","Merchandising","PLV","Référencement","Contrôle prix/visibilité"],
+    "accompagnement":["Comportement Vdr","Organisation Journee","Relation client","Merchandising","activation produit"]
+  };
+  (data[methode.value]||[]).forEach(o=>{
+    const chip=document.createElement('span');
+    chip.className='chip interactive';
+    chip.textContent=o;
+    chip.onclick=()=>chip.classList.toggle('selected');
+    zone.appendChild(chip);
+  });
+}
+
+/* ===========================================================
+   Données produits par activité
+=========================================================== */
+const productGroups={
+  "BE":["TOP","MELTY","COOKY","BRETON","BROWNY","BUNNY","CRUNCHY","DAILY","DONUT","PETIT BEURRE CAKE","FLUFFY","FUN","PETITE BEURRE","SOFT","SUPREME"],
+  "EXCELO":["BARRES","BEL EPI","BISCOTTI","BONO COVER","BONO WAFER","CAPRI","CHOC'UP","CRAK'S","CRAK'S CM","EYO'O","EYO'O COVER","GALETTE BRETONNE","GENOVA","ITRI","KING COOKIES","SERGIO BISCUIT","SILVIA DUO","TEGOLINO","TOP COOKIES","DOLCY CHOCOBAR","SERGIO BLACK","MOMO"],
+  "PAT":["PAT125G","PAT250G","PAT450G","PAT950G","Pâte à tartiner Sergio"],
+  "THE":["THE 4011","THE DYFANE","TOUHFA","IBRIZ"],
+  "FRAIS":["Beurre Kg","Beurre Pain","EDAM","FROMAGE DECOUPE"],
+  "PAUZ":["PAUZ 4F","PAUZ BF"],
+  "PICKERS":["PICKERS SQUARE","PICKERS TOPPERS"],
+  "EPICERIE":["LENTILLE CAPRI 1KG","RIZ 1KG","RIZ 5KG","RIZ BASMATI 1KG","RIZ BASMATI 5KG"]
+};
+
+/* ===========================================================
+   Navigation entre sections
+=========================================================== */
+function passerSection1(){
+  // Réinitialiser les erreurs visuelles
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('error'));
+
+  let erreur = false;
+
+  const siteOk = siteSel.value.trim() !== '';
+  const secOk = secteurSel.value.trim() !== '';
+  const trnOk = [...tourneeZone.querySelectorAll('.chip.selected')].length > 0;
+
+  // Vérification et surlignage
+  if(!siteOk){
+    siteSel.closest('.field').classList.add('error');
+    erreur = true;
+  }
+  if(!secOk){
+    secteurSel.closest('.field').classList.add('error');
+    erreur = true;
+  }
+  if(!trnOk){
+    tourneeZone.closest('.field').classList.add('error');
+    erreur = true;
+  }
+
+  if(erreur){
+    alert("⚠️ Merci de remplir toutes les informations obligatoires (Site, Secteur et au moins une Tournée).");
+    return;
+  }
+
+  // Si tout est OK → passer à la section suivante
+  document.querySelector('.s1').classList.add('hidden');
+  document.querySelector('.s2').classList.remove('hidden');
+}
+
+
+function verrouillerSections12(){
+  // Réinitialiser les erreurs visuelles
+  document.querySelectorAll('.field').forEach(f => f.classList.remove('error'));
+  let erreur = false;
+
+  // Vérifier la sélection BU et Objectifs
+  const buZone = document.getElementById('bu_choices');
+  const objZone = document.getElementById('objectifs_zone');
+  const buSel = buZone.querySelectorAll('.chip.interactive.selected').length > 0;
+  const objSel = objZone.querySelectorAll('.chip.interactive.selected').length > 0;
+
+  if(!buSel){
+    buZone.closest('.field').classList.add('error');
+    erreur = true;
+  }
+  if(!objSel){
+    objZone.closest('.field').classList.add('error');
+    erreur = true;
+  }
+
+  if(erreur){
+    alert("⚠️ Merci de sélectionner au moins une Business Unit et un Objectif terrain.");
+    return;
+  }
+
+  // Tout est OK → Passage à la Section 3
+  document.querySelector('.s2').classList.add('hidden');
+  document.querySelector('.s3').classList.remove('hidden');
+  if(document.getElementById('visites').children.length === 0){ ajouterVisite(); }
+}
+
+/* ===========================================================
+   Section 3 – Visites
+=========================================================== */
+let visitIdx=0;
+
+function ajouterVisite(){
+  visitIdx++;
+  const wrapper=document.createElement('div');
+  wrapper.className='visit';
+  wrapper.id='v'+visitIdx;
+
+  wrapper.innerHTML=`
+    <div class="visit-header" onclick="toggleVisite('${wrapper.id}')">
+      <div class="visit-title">Visite ${visitIdx}</div>
+      <button type="button" class="btn-remove" onclick="event.stopPropagation();document.getElementById('${wrapper.id}').remove()">✖</button>
+    </div>
+    <div class="visit-body">
+      <!-- Q2 – Actif ? -->
+      <div class="row">
+        <div class="field">
+          <label>Actif *</label>
+          <select onchange="toggleActif(this, ${visitIdx})">
+            <option value="">-- Sélectionner --</option>
+            <option>Oui</option>
+            <option>Non</option>
+          </select>
+        </div>
+        <div class="field" id="newclient_wrap_${visitIdx}" style="display:none;">
+          <label>Nouveau client *</label>
+          <select onchange="toggleNewClient(this, ${visitIdx})">
+            <option value="">-- Sélectionner --</option>
+            <option>Oui</option>
+            <option>Non</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Bloc 4 – Création de nouveau client -->
+      <div id="bloc_new_${visitIdx}" style="display:none">
+        <hr class="sep">
+        <h3>Création de nouveau client</h3>
+        <div class="row">
+          <div class="field"><label>Nom</label><input type="text" name="nom_${visitIdx}"></div>
+          <div class="field"><label>Prénom</label><input type="text" name="prenom_${visitIdx}"></div>
+          <div class="field"><label>Catégorie</label>
+            <select name="categorie_${visitIdx}">
+              <option value="">-- Sélectionner --</option><option>Large</option><option>Moyen</option><option>Petit</option>
+            </select>
+          </div>
+          <div class="field"><label>TEL</label><input type="text" name="tel_${visitIdx}" inputmode="tel" placeholder="06XXXXXXXX"></div>
+        </div>
+
+        <div class="row">
+          <div class="field"><label>Latitude</label><input type="text" id="lat_${visitIdx}" class="readonly" readonly></div>
+          <div class="field"><label>Longitude</label><input type="text" id="long_${visitIdx}" class="readonly" readonly></div>
+          <div class="field" style="align-self:flex-end">
+            <button type="button" class="btn btn-ghost" onclick="localiser(${visitIdx})">📍 Activer GPS</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Fort potentiel marché</label>
+          <div id="potentiel_new_${visitIdx}" class="choices">
+            ${["Biscuit 1 Dhs","Biscuit 2 Dhs","Biscuit 3 Dhs et +","Barres","PAT (pâte à tartiner)","Cake","Riz","Thé"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
+          </div>
+          <div class="help">Choix multiples autorisés.</div>
+        </div>
+      </div>
+<!-- Bloc 4.5 – Code client obligatoire -->
+<div id="bloc_code_${visitIdx}" style="display:none">
+  <hr class="sep">
+  <h3>Code client</h3>
+
+  <!-- Ligne Code client + Catégorie -->
+  <div class="row">
+    <div class="field">
+      <label>Code client *</label>
+      <input type="text" id="codeclient_${visitIdx}" placeholder="Ex: 12345" required>
+    </div>
+    <div class="field">
+      <label>Catégorie client *</label>
+      <select id="categorieclient_${visitIdx}" required>
+        <option value="">-- Sélectionner --</option>
+        <option value="Large">Large</option>
+        <option value="Moyen">Moyen</option>
+        <option value="Petit">Petit</option>
+      </select>
+    </div>
+  </div>
+
+<!-- Nouvelle question : origine des achats (choix multiples type chips) -->
+<div class="field">
+  <label>Où est-ce que vous faites vos achats ? *</label>
+  <div id="achat_choices_${visitIdx}" class="choices">
+    ${["Grossiste","Atacadao","Ambulant","Autre"].map(a=>`
+      <span class="chip interactive" data-value="${a}" onclick="toggleAchatChip(this, ${visitIdx})">${a}</span>
+    `).join('')}
+  </div>
+</div>
+
+<!-- Champ texte affiché uniquement si "Autre" est sélectionné -->
+<div class="field" id="achat_autre_field_${visitIdx}" style="display:none;">
+  <label>Précisez *</label>
+  <input type="text" id="achat_autre_${visitIdx}" placeholder="Précisez votre source d'achat">
+</div>
+
+  <div class="help">Ces champs sont obligatoires avant de passer à l’évaluation vendeur.</div>
+</div>
+
+      <!-- Blocs 5 + 6 + 7 (Exécution FDV / Marché / PLV) -->
+      <div id="bloc_exec_${visitIdx}" style="display:none">
+        <hr class="sep">
+        <h3>5) Visite vendeur / livreur</h3>
+        ${blocVendeurLivreur(visitIdx)}
+        <div class="field">
+          <label>Réclamation (si applicable)</label>
+          <div class="choices">
+            ${["Rupture récurrente","Visite vendeurs irrégulière","Comportement vendeur","Retard livraison","Périmé","Code facture différent"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div class="field">
+          <label>Remarque</label>
+          <textarea name="remarque_${visitIdx}" placeholder="Observations ou retours du client..."></textarea>
+        </div>
+
+        <hr class="sep">
+        <h3>6) Observation marché</h3>
+      <!-- 6) Observation marché -->
+<hr class="sep">
+<h3>6) Observation marché</h3>
+
+<div class="field">
+  <label>Visibilité concurrence *</label>
+  <div id="visibilite_concurrence_${visitIdx}" class="choices">
+    ${["Mondelez","Tobigo","Henry's","Sbaa","Dahmiss","Nessma","Sinia","Cigala","Presto","Autre"].map(a=>`
+      <span class="chip interactive" data-value="${a}" onclick="toggleConcuChip(this, ${visitIdx})">${a}</span>
+    `).join('')}
+  </div>
+</div>
+
+<div class="field" id="concu_autre_field_${visitIdx}" style="display:none;">
+  <label>Précisez *</label>
+  <input type="text" id="concu_autre_${visitIdx}" placeholder="Précisez le concurrent visible">
+</div>
+
+        <div class="field">
+          <label>Fort potentiel marché</label>
+          <div id="potentiel_${visitIdx}" class="choices">
+            ${["Biscuit 1 Dhs","Biscuit 2 Dhs","Biscuit 3 Dhs et +","Barres","PAT","Cake","Riz","Thé"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Disponibilité activité – ajouter des produits (par groupe)</label>
+          <div class="choices" id="activites_${visitIdx}">
+            ${Object.keys(productGroups).map(g=>`<span class="chip interactive" data-group="${g}" onclick="ajouterProduits('${g}', ${visitIdx}, this)">${g}</span>
+`).join('')}
+          </div>
+          <div class="help">Clique un groupe (EXCELO, BE, PAT, …) pour charger ses produits. Les nouveaux produits s’ajoutent **en haut** sans effacer ceux déjà choisis.</div>
+        </div>
+
+        <div class="field">
+          <label>Produits disponibles sélectionnés</label>
+          <div id="produits_${visitIdx}" class="choices"></div>
+        </div>
+
+        <hr class="sep">
+        <h3>7) Observation PLV</h3>
+        <div class="row">
+          <div class="field">
+            <label>PLV disponible ?</label>
+            <select onchange="togglePLV(this, ${visitIdx})">
+              <option>Non</option><option>Oui</option>
+            </select>
+          </div>
+        </div>
+        <div class="field" id="plv_detail_${visitIdx}" style="display:none">
+          <label>Type PLV</label>
+          <div class="choices">
+            ${["Présentoir sol","Présentoir comptoir","Habillage étagère"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const container=document.getElementById('visites');
+
+  // Replier toutes les visites déjà présentes
+  [...container.children].forEach(div=>{
+    const body=div.querySelector('.visit-body');
+    if(body && body.style.display!=='none'){ body.style.display='none'; }
+  });
+
+  // Insérer la nouvelle en haut et l’ouvrir
+  container.prepend(wrapper);
+  wrapper.querySelector('.visit-body').style.display='block';
+}
+
+function toggleVisite(id){
+  const el=document.getElementById(id).querySelector('.visit-body');
+  el.style.display = (el.style.display==='none') ? 'block':'none';
+}
+
+function toggleChip(el) {
+  el.classList.toggle('selected');
+  const cb = el.querySelector('input[type="checkbox"]');
+  if (cb) cb.checked = el.classList.contains('selected');
+}
+
+function blocVendeurLivreur(i){
+  // BU standard + “LIVREUR” présenté de la même manière
+  const buRows = ["EXCELO","BE","NEGOCE","CHOCOLAT","LIVREUR"].map(bu=>`
+    <div class="vendor-field">
+      <span class="main">${bu}</span>
+      <span class="hint">Visite</span>
+      <select name="visit_${bu.toLowerCase()}_${i}"><option>Oui</option><option>Non</option></select>
+      <span class="hint">Satisfaction</span>
+      <select name="satisfaction_${bu.toLowerCase()}_${i}"><option>Oui</option><option>Non</option></select>
+    </div>
+  `).join('');
+  return `<div class="vendor-grid">${buRows}</div>`;
+}
+
+/* ====== Logiques d’affichage (Actif / Nouveau client / PLV) ====== */
+function toggleActif(sel,i){
+  const v = sel.value;
+  const blocCode = document.getElementById(`bloc_code_${i}`);
+  const blocExec = document.getElementById(`bloc_exec_${i}`);
+  const blocNew  = document.getElementById(`bloc_new_${i}`);
+  const newClientWrap = document.getElementById(`newclient_wrap_${i}`);
+
+  // Si Actif = Oui → afficher Code client + Exécution
+  if(v === 'Oui'){
+    newClientWrap.style.display = 'none';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'block';
+    blocExec.style.display = 'block';
+  }
+  // Si Actif = Non → afficher question “Nouveau client ?”
+  else if(v === 'Non'){
+    newClientWrap.style.display = 'block';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+  }
+  else{
+    newClientWrap.style.display = 'none';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+  }
+}
+
+function toggleNewClient(sel,i){
+  const v = sel.value;
+  const blocNew  = document.getElementById(`bloc_new_${i}`);
+  const blocExec = document.getElementById(`bloc_exec_${i}`);
+  const blocCode = document.getElementById(`bloc_code_${i}`);
+
+  if(v === 'Oui'){
+    // Nouveau client : on affiche la création du client uniquement
+    blocNew.style.display = 'block';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+  }
+  else if(v === 'Non'){
+    // Inactif mais pas nouveau : on demande le code client puis la partie exécution
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'block';
+    blocExec.style.display = 'block';
+  }
+  else{
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+  }
+}
+function toggleAchatChip(el, i){
+  el.classList.toggle('selected');
+  const zone = document.getElementById(`achat_choices_${i}`);
+  const autresel = zone.querySelector('.chip[data-value="Autre"]');
+  const autreField = document.getElementById(`achat_autre_field_${i}`);
+
+  // Affiche ou masque le champ texte si "Autre" sélectionné
+  autreField.style.display = (autresel && autresel.classList.contains('selected')) ? 'block' : 'none';
+}
+
+function toggleConcuChip(el, i){
+  el.classList.toggle('selected');
+  const zone = document.getElementById(`visibilite_concurrence_${i}`);
+  const autresel = zone.querySelector('.chip[data-value="Autre"]');
+  const autreField = document.getElementById(`concu_autre_field_${i}`);
+
+  // Affiche le champ texte si "Autre" est sélectionné
+  autreField.style.display = (autresel && autresel.classList.contains('selected')) ? 'block' : 'none';
+}
+
+function togglePLV(sel,i){
+  document.getElementById(`plv_detail_${i}`).style.display = (sel.value==='Oui')?'block':'none';
+}
+
+/* ====== Produits dynamiques par activité ====== */
+function ajouterProduits(groupe, i, chipEl){
+  if(chipEl) chipEl.classList.toggle('selected');
+  const zone=document.getElementById(`produits_${i}`);
+  const existants=new Set([...zone.querySelectorAll('input[type="checkbox"]')].map(cb=>cb.value));
+  const nouveaux=(productGroups[groupe]||[]).filter(p=>!existants.has(p));
+
+  // Ajouter en haut (ordre inversé pour que le 1er du groupe reste au-dessus)
+  nouveaux.reverse().forEach(p=>{
+    const id=`${groupe}_${i}_${p.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'')}`;
+    const span=document.createElement('span');
+   span.className = 'chip interactive';  // blanc par défaut
+  span.innerHTML = `
+  <input type="checkbox" id="${id}" value="${p}" checked hidden>
+  <span>${p}</span>
+`;
+    // Permettre de (dé)sélectionner en cliquant
+    span.addEventListener('click', e=>{
+      if(e.target.tagName.toLowerCase()==='input') return;
+      const cb=span.querySelector('input');
+      cb.checked=!cb.checked;
+      span.classList.toggle('selected', cb.checked);
+    });
+    zone.prepend(span);
+  });
+}
+
+/* ====== GPS pour nouveau client ====== */
+function localiser(i){
+  if(!navigator.geolocation){ alert("La géolocalisation n'est pas supportée."); return; }
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      document.getElementById(`lat_${i}`).value  = pos.coords.latitude.toFixed(6);
+      document.getElementById(`long_${i}`).value = pos.coords.longitude.toFixed(6);
+    },
+    err=>alert("Erreur GPS : "+err.message),
+    {enableHighAccuracy:true, timeout:10000}
+  );
+}
+
+/* ===========================================================
+   Soumission locale (démo)
+=========================================================== */
+document.getElementById('questionnaire').addEventListener('submit', e=>{
+  e.preventDefault();
+  alert("✅ Données saisies avec succès (test local). Ouvrez la console pour voir la sérialisation.");
+
+  // Sérialisation simple
+  const data={};
+  // Section 1 – tournées (chips)
+  data.site = siteSel.value;
+  data.secteur = secteurSel.value;
+  data.tournees = [...tourneeZone.querySelectorAll('.chip.selected')].map(c=>c.dataset.value);
+
+  // Exemple : collecter grossièrement quelques champs visibles
+  console.log('--- DUMP (démo) ---');
+  console.log('Header', {date:document.getElementById('datejour').value, dev:document.getElementById('nomdev').value, id:document.getElementById('idjournee').value});
+  console.log('Section 1', data);
+});
+</script>
+</body>
+</html>
