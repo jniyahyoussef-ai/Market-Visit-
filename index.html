@@ -142,15 +142,19 @@
       max-width:130px;
     }
   }
+.error-border {
+  border: 2px solid var(--danger) !important;
+  background-color: #ffeaea !important;
+}
+
 </style>
 
-
-</style>
 </head>
 <body>
 <h1> </h1>
 
-<form id="questionnaire" autocomplete="off">
+<form id="questionnaire" autocomplete="off" onsubmit="return envoyerDonneesGoogleSheet()">
+
 
   <!-- ====================== SECTION 1 ====================== -->
   <div class="section s1">
@@ -1807,11 +1811,18 @@ function validerChampsVisibles() {
 /* ==========================================================
    ENVOI VERS GOOGLE SHEETS
 ========================================================== */
-function envoyerDonneesGoogleSheet() {
-  if (!validerChampsVisibles()) return; // ✅ stop si champ visible vide
+function envoyerDonneesGoogleSheet(event) {
+  if (event) event.preventDefault(); // bloque l'envoi HTML par défaut
+
+  // ✅ Validation stricte de tous les champs visibles requis
+  if (!validerChampsVisibles()) {
+    console.warn("⛔ Envoi annulé : champs obligatoires manquants");
+    return false; // Empêche tout envoi
+  }
 
   const data = collectFormData();
   const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec";
+
   fetch(webhook, {
     method: "POST",
     body: JSON.stringify(data),
@@ -1826,7 +1837,10 @@ function envoyerDonneesGoogleSheet() {
     console.error("Erreur :", err);
     alert("❌ Erreur lors de l’envoi des données.");
   });
+
+  return false; // 🚫 bloque le rechargement du formulaire
 }
+
 /* ==========================================================
    DÉFINITION DES CHAMPS OBLIGATOIRES PAR CAS
 ========================================================== */
