@@ -1705,64 +1705,94 @@ function localiser(i){
 }
 
 /* ==========================================================
-   ENVOI DES DONNÉES VERS GOOGLE SHEETS
+   ENVOI COMPLET DES DONNÉES VERS GOOGLE SHEETS
 ========================================================== */
 function collectFormData() {
   const data = {};
 
-  // Section 1
+  // 🔹 SECTION 1 – Informations générales
   data["Date du jour"] = document.getElementById("datejour")?.value || "";
   data["ID Journée"] = document.getElementById("idjournee")?.value || "";
   data["Responsable"] = document.getElementById("nomdev")?.value || "";
   data["Site"] = document.getElementById("site")?.value || "";
   data["Secteur"] = document.getElementById("secteur")?.value || "";
   data["Tournée(s)"] = [...document.querySelectorAll("#tournee-zone .chip.selected")]
-    .map(c => c.dataset.value).join(", ");
+    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "—";
 
-  // Section 2
+  // 🔹 SECTION 2 – Activité commerciale
   data["Business Unit(s)"] = [...document.querySelectorAll("#bu_choices .chip.selected")]
-    .map(c => c.textContent.trim()).join(", ");
-  data["Méthode"] = document.getElementById("methode")?.value || "";
+    .map(c => c.textContent.trim()).join(", ") || "—";
+  data["Méthode"] = document.querySelector("#methode_choices .chip.selected")?.textContent.trim() || "";
   data["Objectif(s) terrain"] = [...document.querySelectorAll("#objectifs_zone .chip.selected")]
-    .map(c => c.textContent.trim()).join(", ");
+    .map(c => c.textContent.trim()).join(", ") || "—";
 
-  // Section 3 – Boucle sur toutes les visites
+  // 🔹 SECTION 3 – VISITES DÉTAILLÉES
   const visites = document.querySelectorAll(".visit");
+  data["Nombre de visites"] = visites.length;
+
   visites.forEach((v, i) => {
     const n = i + 1;
-    data[`Visite ${n} – Actif`] = v.querySelector("select")?.value || "";
-    data[`Visite ${n} – Code client`] = v.querySelector('[id^="codeclient_"]')?.value || "";
+
+    // Statut client
+    data[`Visite ${n} – Actif`] = v.querySelector(`[id^="actif_${n}"]`)?.value || "";
+    data[`Visite ${n} – Code client`] = v.querySelector(`[id^="codeclient_${n}"]`)?.value || "";
     data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`[id^="type_client_${n-1}"] .chip.selected`)]
-      .map(c => c.dataset.value).join(", ");
-    data[`Visite ${n} – Latitude`] = v.querySelector('[id^="lat_"]')?.value || "";
-    data[`Visite ${n} – Longitude`] = v.querySelector('[id^="long_"]')?.value || "";
+      .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+
+    // Informations de géolocalisation
+    data[`Visite ${n} – Latitude`] = v.querySelector(`[id^="lat_${n}"]`)?.value || "";
+    data[`Visite ${n} – Longitude`] = v.querySelector(`[id^="long_${n}"]`)?.value || "";
+
+    // Disponibilité et activité
+    data[`Visite ${n} – Disponibilité`] = [...v.querySelectorAll(`#dispo_${n} .chip.selected`)]
+      .map(c => c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Activité`] = [...v.querySelectorAll(`#activite_${n} .chip.selected`)]
+      .map(c => c.textContent.trim()).join(", ") || "";
+
+    // Produits choisis
     data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n-1} .chip.selected span`)]
-      .map(c => c.textContent).join(", ");
+      .map(c => c.textContent.trim()).join(", ") || "";
+
+    // Satisfaction livreur
+    data[`Visite ${n} – Satisfaction livreur`] = v.querySelector(`#satisfaction_${n} .chip.selected`)?.textContent.trim() || "";
+
+    // Observation marché
+    data[`Visite ${n} – Observation marché`] = v.querySelector(`[id^="observation_${n}"]`)?.value || "";
+
+    // Remarques
+    data[`Visite ${n} – Remarque`] = v.querySelector(`[id^="remarque_${n}"]`)?.value || "";
   });
 
+  console.log("🧾 Données collectées :", data);
   return data;
 }
 
+/* ==========================================================
+   ENVOI VERS GOOGLE SHEETS
+========================================================== */
 function envoyerDonneesGoogleSheet() {
   const data = collectFormData();
-  const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec";  // ✅ correct
+
+  const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec"; // ✅ correct
 
   fetch(webhook, {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
   })
-  .then(r => r.text())
-  .then(res => {
-    alert("✅ Données envoyées avec succès !");
-    console.log("Réponse Google Apps Script :", res);
-  })
-  .catch(err => {
-    console.error("Erreur :", err);
-    alert("❌ Erreur lors de l’envoi des données.");
-  });
+    .then(r => r.text())
+    .then(res => {
+      alert("✅ Données envoyées avec succès !");
+      console.log("Réponse Google Apps Script :", res);
+    })
+    .catch(err => {
+      console.error("Erreur :", err);
+      alert("❌ Erreur lors de l’envoi des données.");
+    });
 }
+
 </script>
 </body>
 </html>
+
 
