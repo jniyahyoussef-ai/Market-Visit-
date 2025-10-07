@@ -653,15 +653,27 @@ function ajouterProduits(groupe, i, chipEl){
 }
 
 /* ====== GPS pour nouveau client ====== */
-function localiser(i){
-  if(!navigator.geolocation){ alert("La géolocalisation n'est pas supportée."); return; }
+function getLocation(idx) {
+  if (!navigator.geolocation) {
+    alert("La géolocalisation n’est pas supportée par ce navigateur.");
+    return;
+  }
   navigator.geolocation.getCurrentPosition(
-    pos=>{
-      document.getElementById(`lat_${i}`).value  = pos.coords.latitude.toFixed(6);
-      document.getElementById(`long_${i}`).value = pos.coords.longitude.toFixed(6);
+    pos => {
+      // Fill the latitude and longitude fields for the given idx
+      document.getElementById('lat_' + idx).value = pos.coords.latitude.toFixed(6);
+      document.getElementById('long_' + idx).value = pos.coords.longitude.toFixed(6);
     },
-    err=>alert("Erreur GPS : "+err.message),
-    {enableHighAccuracy:true, timeout:10000}
+    err => {
+      // Handle geolocation errors
+      alert("Erreur GPS : " + err.message);
+    },
+    {
+      enableHighAccuracy: true,
+      // Optional: set a timeout (in ms) and a maximumAge for cached positions
+      timeout: 10000, // 10 seconds
+      maximumAge: 0
+    }
   );
 }
 
@@ -687,3 +699,4 @@ document.getElementById('questionnaire').addEventListener('submit', e=>{
 </script>
 </body>
 </html>
+
