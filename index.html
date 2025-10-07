@@ -1704,25 +1704,6 @@ function localiser(i){
   );
 }
 
-/* ===========================================================
-   Soumission locale (démo)
-=========================================================== */
-document.getElementById('questionnaire').addEventListener('submit', e=>{
-  e.preventDefault();
-  alert("✅ Données saisies avec succès (test local). Ouvrez la console pour voir la sérialisation.");
-
-  // Sérialisation simple
-  const data={};
-  // Section 1 – tournées (chips)
-  data.site = siteSel.value;
-  data.secteur = secteurSel.value;
-  data.tournees = [...tourneeZone.querySelectorAll('.chip.selected')].map(c=>c.dataset.value);
-
-  // Exemple : collecter grossièrement quelques champs visibles
-  console.log('--- DUMP (démo) ---');
-  console.log('Header', {date:document.getElementById('datejour').value, dev:document.getElementById('nomdev').value, id:document.getElementById('idjournee').value});
-  console.log('Section 1', data);
-});
 /* ==========================================================
    ENVOI DES DONNÉES VERS GOOGLE SHEETS
 ========================================================== */
@@ -1781,7 +1762,7 @@ function envoyerDonneesGoogleSheet() {
     alert("❌ Erreur lors de l’envoi des données.");
   });
 }
-
 </script>
 </body>
 </html>
+
