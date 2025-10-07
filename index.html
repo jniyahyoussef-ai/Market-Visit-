@@ -1703,7 +1703,8 @@ function localiser(i){
     {enableHighAccuracy:true, timeout:10000}
   );
 }
-/*/* ==========================================================
+
+/* ==========================================================
    ENVOI COMPLET DES DONNÉES VERS GOOGLE SHEETS (CORRIGÉ)
 ========================================================== */
 function collectFormData() {
@@ -1726,86 +1727,89 @@ function collectFormData() {
     .map(c => c.textContent.trim()).join(", ") || "—";
 
   // 🔹 SECTION 3 – VISITES
-const visites = document.querySelectorAll(".visit");
-data["Nombre de visites"] = visites.length;
+  const visites = document.querySelectorAll(".visit");
+  data["Nombre de visites"] = visites.length;
 
-visites.forEach((v, i) => {
-  const n = i + 1;
+  visites.forEach((v, i) => {
+    const n = i + 1;
+    const blocNew  = document.getElementById(`bloc_new_${n}`);
+    const blocCode = document.getElementById(`bloc_code_${n}`);
+    const blocExec = document.getElementById(`bloc_exec_${n}`);
 
-  // 🔸 Récupération correcte des blocs
-  const blocNew  = document.getElementById(`bloc_new_${i+1}`);
-  const blocCode = document.getElementById(`bloc_code_${i+1}`);
-  const blocExec = document.getElementById(`bloc_exec_${i+1}`);
+    data[`Visite ${n} – Actif`] = v.querySelector("select")?.value || "";
+    data[`Visite ${n} – Nom client`] = blocNew?.querySelector(`[name^="nom_"]`)?.value || "";
+    data[`Visite ${n} – Prénom client`] = blocNew?.querySelector(`[name^="prenom_"]`)?.value || "";
+    data[`Visite ${n} – Téléphone`] = blocNew?.querySelector(`[name^="tel_"]`)?.value || "";
+    data[`Visite ${n} – Catégorie`] = blocNew?.querySelector(`[name^="categorie_"]`)?.value || "";
 
-  // --- Actif ?
-  const isActif = v.querySelector('select')?.value || "";
-  data[`Visite ${n} – Actif`] = isActif;
+    data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`#type_client_${n} .chip.selected`)]
+      .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Type client autre`] = document.getElementById(`type_client_autre_${n}`)?.value || "";
 
-  // --- Nouveau client : on lit les champs même si bloc_exec/code sont cachés
-  data[`Visite ${n} – Nom client`] = blocNew?.querySelector(`[name^="nom_"]`)?.value || "";
-  data[`Visite ${n} – Prénom client`] = blocNew?.querySelector(`[name^="prenom_"]`)?.value || "";
-  data[`Visite ${n} – Téléphone`] = blocNew?.querySelector(`[name^="tel_"]`)?.value || "";
-  data[`Visite ${n} – Catégorie`] = blocNew?.querySelector(`[name^="categorie_"]`)?.value || "";
+    data[`Visite ${n} – Latitude`] = document.getElementById(`lat_${n}`)?.value || "";
+    data[`Visite ${n} – Longitude`] = document.getElementById(`long_${n}`)?.value || "";
 
-  // --- Type client
-  data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`#type_client_${i+1} .chip.selected`)]
-    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
-  data[`Visite ${n} – Type client autre`] = document.getElementById(`type_client_autre_${i+1}`)?.value || "";
+    data[`Visite ${n} – Code client`] = blocCode?.querySelector(`[id^="codeclient_"]`)?.value || "";
+    data[`Visite ${n} – Catégorie client`] = blocCode?.querySelector(`[id^="categorieclient_"]`)?.value || "";
 
-  // --- Coordonnées GPS
-  data[`Visite ${n} – Latitude`] = document.getElementById(`lat_${i+1}`)?.value || "";
-  data[`Visite ${n} – Longitude`] = document.getElementById(`long_${i+1}`)?.value || "";
+    data[`Visite ${n} – Source achats`] = [...v.querySelectorAll(`#achat_choices_${n} .chip.selected`)]
+      .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Autre achat`] = document.getElementById(`achat_autre_${n}`)?.value || "";
 
-  // --- Code client (seulement si client existant)
-  data[`Visite ${n} – Code client`] = blocCode?.querySelector(`[id^="codeclient_"]`)?.value || "";
-  data[`Visite ${n} – Catégorie client`] = blocCode?.querySelector(`[id^="categorieclient_"]`)?.value || "";
+    data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n} .chip.selected span`)]
+      .map(c => c.textContent.trim()).join(", ") || "";
 
-  // --- Source d'achat
-  data[`Visite ${n} – Source achats`] = [...v.querySelectorAll(`#achat_choices_${i+1} .chip.selected`)]
-    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
-  data[`Visite ${n} – Autre achat`] = document.getElementById(`achat_autre_${i+1}`)?.value || "";
-
-  // --- Produits
-  data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${i+1} .chip.selected span`)]
-    .map(c => c.textContent.trim()).join(", ") || "";
-
-  // --- Réclamation / Remarques (uniquement si client actif)
-  if (isActif === "oui") {
-    data[`Visite ${n} – Réclamation`] = [...v.querySelectorAll(`#bloc_exec_${i+1} .choices .chip.selected`)]
+    data[`Visite ${n} – Réclamation`] = [...v.querySelectorAll(`#bloc_exec_${n} .choices .chip.selected`)]
       .map(c => c.textContent.trim()).join(", ") || "";
     data[`Visite ${n} – Remarque`] = v.querySelector(`[name^="remarque_"]`)?.value || "";
-    
-    // --- PLV (uniquement si client actif)
-    data[`Visite ${n} – PLV disponible`] = v.querySelector(`#bloc_exec_${i+1} select`)?.value || "";
-  } else {
-    data[`Visite ${n} – Réclamation`] = "";
-    data[`Visite ${n} – Remarque`] = "";
-    data[`Visite ${n} – PLV disponible`] = "";
-  }
+    data[`Visite ${n} – PLV disponible`] = v.querySelector(`#bloc_exec_${n} select`)?.value || "";
 
-  // --- Concurrence
-  data[`Visite ${n} – Concurrence visible`] = [...v.querySelectorAll(`#visibilite_concurrence_${i+1} .chip.selected`)]
-    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
-  data[`Visite ${n} – Concurrence autre`] = document.getElementById(`concu_autre_${i+1}`)?.value || "";
+    data[`Visite ${n} – Concurrence visible`] = [...v.querySelectorAll(`#visibilite_concurrence_${n} .chip.selected`)]
+      .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Concurrence autre`] = document.getElementById(`concu_autre_${n}`)?.value || "";
 
-  // --- Potentiel marché
-  data[`Visite ${n} – Potentiel marché`] = [...v.querySelectorAll(`#potentiel_${i+1} .chip.selected`)]
-    .map(c => c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Potentiel marché`] = [...v.querySelectorAll(`#potentiel_${n} .chip.selected`)]
+      .map(c => c.textContent.trim()).join(", ") || "";
 
-  // --- Activités
-  data[`Visite ${n} – Activités sélectionnées`] = [...v.querySelectorAll(`#activites_${i+1} .chip.selected`)]
-    .map(c => c.dataset.group || c.textContent.trim()).join(", ") || "";
-});
+    data[`Visite ${n} – Activités sélectionnées`] = [...v.querySelectorAll(`#activites_${n} .chip.selected`)]
+      .map(c => c.dataset.group || c.textContent.trim()).join(", ") || "";
+  });
 
   console.log("✅ Données collectées :", data);
   return data;
+}
 
+/* ==========================================================
+   VALIDATION DYNAMIQUE – champs obligatoires visibles
+========================================================== */
+function validerChampsVisibles() {
+  let erreur = false;
+  const messages = [];
+
+  document.querySelectorAll('input[required], select[required]').forEach(el => {
+    if (el.offsetParent !== null && el.value.trim() === "") {
+      el.classList.add('error-border');
+      erreur = true;
+      const label = el.closest('.field')?.querySelector('label')?.textContent || el.id;
+      messages.push(label);
+    } else {
+      el.classList.remove('error-border');
+    }
+  });
+
+  if (erreur) {
+    alert("⚠️ Merci de remplir les champs obligatoires suivants :\n- " + messages.join("\n- "));
+  }
+
+  return !erreur;
 }
 
 /* ==========================================================
    ENVOI VERS GOOGLE SHEETS
 ========================================================== */
 function envoyerDonneesGoogleSheet() {
+  if (!validerChampsVisibles()) return; // ✅ stop si champ visible vide
+
   const data = collectFormData();
   const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec";
   fetch(webhook, {
@@ -1820,13 +1824,121 @@ function envoyerDonneesGoogleSheet() {
   })
   .catch(err => {
     console.error("Erreur :", err);
-    alert("❌ Erreur lors de l’envoi des données. Vérifie les champs obligatoires.");
+    alert("❌ Erreur lors de l’envoi des données.");
   });
+}
+/* ==========================================================
+   DÉFINITION DES CHAMPS OBLIGATOIRES PAR CAS
+========================================================== */
+function definirChampsObligatoires(i, actif, nouveau) {
+  // On commence par tout désactiver
+  document.querySelectorAll(`#v${i} input, #v${i} select, #v${i} textarea`).forEach(el => {
+    el.removeAttribute('required');
+  });
+
+  // Si Actif = Oui → rendre tous les champs du bloc exécution obligatoires
+  if (actif === "Oui") {
+    [
+      `#codeclient_${i}`,
+      `#categorieclient_${i}`,
+      `#achat_choices_${i}`,
+      `#bloc_exec_${i} textarea`,
+      `#visibilite_concurrence_${i}`,
+      `#potentiel_${i}`,
+      `#activites_${i}`,
+      `#plv_detail_${i}`
+    ].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.querySelectorAll('input,select,textarea').forEach(e => e.setAttribute('required', 'required'));
+    });
+  }
+
+  // Si Actif = Non + Nouveau = Oui → nouveau client obligatoire
+  if (actif === "Non" && nouveau === "Oui") {
+    [
+      `[name="nom_${i}"]`,
+      `[name="prenom_${i}"]`,
+      `[name="tel_${i}"]`,
+      `[name="categorie_${i}"]`,
+      `#type_client_${i}`
+    ].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.querySelectorAll('input,select').forEach(e => e.setAttribute('required', 'required'));
+    });
+  }
+
+  // Si Actif = Non + Nouveau = Non → code client obligatoire
+  if (actif === "Non" && nouveau === "Non") {
+    [`#codeclient_${i}`, `#categorieclient_${i}`].forEach(sel => {
+      const el = document.querySelector(sel);
+      if (el) el.setAttribute('required', 'required');
+    });
+  }
+}
+
+/* ==========================================================
+   MISE À JOUR DES BLOCS (Actif / Nouveau Client)
+========================================================== */
+function toggleActif(sel, i) {
+  const v = sel.value;
+  const blocCode = document.getElementById(`bloc_code_${i}`);
+  const blocExec = document.getElementById(`bloc_exec_${i}`);
+  const blocNew  = document.getElementById(`bloc_new_${i}`);
+  const newClientWrap = document.getElementById(`newclient_wrap_${i}`);
+
+  if (v === 'Oui') {
+    newClientWrap.style.display = 'none';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'block';
+    blocExec.style.display = 'block';
+    definirChampsObligatoires(i, "Oui", "");
+  } 
+  else if (v === 'Non') {
+    newClientWrap.style.display = 'block';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+    definirChampsObligatoires(i, "Non", "");
+  } 
+  else {
+    newClientWrap.style.display = 'none';
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+    definirChampsObligatoires(i, "", "");
+  }
+}
+
+function toggleNewClient(sel, i) {
+  const v = sel.value;
+  const blocNew  = document.getElementById(`bloc_new_${i}`);
+  const blocExec = document.getElementById(`bloc_exec_${i}`);
+  const blocCode = document.getElementById(`bloc_code_${i}`);
+
+  if (v === 'Oui') {
+    blocNew.style.display = 'block';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+    definirChampsObligatoires(i, "Non", "Oui");
+  } 
+  else if (v === 'Non') {
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'block';
+    blocExec.style.display = 'block';
+    definirChampsObligatoires(i, "Non", "Non");
+  } 
+  else {
+    blocNew.style.display = 'none';
+    blocCode.style.display = 'none';
+    blocExec.style.display = 'none';
+    definirChampsObligatoires(i, "", "");
+  }
 }
 
 </script>
 </body>
 </html>
+
 
 
 
