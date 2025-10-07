@@ -1703,14 +1703,13 @@ function localiser(i){
     {enableHighAccuracy:true, timeout:10000}
   );
 }
-
-/* ==========================================================
-   ENVOI COMPLET DES DONNÉES VERS GOOGLE SHEETS
+/*/* ==========================================================
+   ENVOI COMPLET DES DONNÉES VERS GOOGLE SHEETS (CORRIGÉ)
 ========================================================== */
 function collectFormData() {
   const data = {};
 
-  // 🔹 SECTION 1 – Informations générales
+  // 🔹 SECTION 1
   data["Date du jour"] = document.getElementById("datejour")?.value || "";
   data["ID Journée"] = document.getElementById("idjournee")?.value || "";
   data["Responsable"] = document.getElementById("nomdev")?.value || "";
@@ -1719,52 +1718,88 @@ function collectFormData() {
   data["Tournée(s)"] = [...document.querySelectorAll("#tournee-zone .chip.selected")]
     .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "—";
 
-  // 🔹 SECTION 2 – Activité commerciale
+  // 🔹 SECTION 2
   data["Business Unit(s)"] = [...document.querySelectorAll("#bu_choices .chip.selected")]
     .map(c => c.textContent.trim()).join(", ") || "—";
-  data["Méthode"] = document.querySelector("#methode_choices .chip.selected")?.textContent.trim() || "";
+  data["Méthode"] = document.getElementById("methode")?.value || "";
   data["Objectif(s) terrain"] = [...document.querySelectorAll("#objectifs_zone .chip.selected")]
     .map(c => c.textContent.trim()).join(", ") || "—";
 
-  // 🔹 SECTION 3 – VISITES DÉTAILLÉES
-  const visites = document.querySelectorAll(".visit");
-  data["Nombre de visites"] = visites.length;
+  // 🔹 SECTION 3 – VISITES
+const visites = document.querySelectorAll(".visit");
+data["Nombre de visites"] = visites.length;
 
-  visites.forEach((v, i) => {
-    const n = i + 1;
+visites.forEach((v, i) => {
+  const n = i + 1;
 
-    // Statut client
-    data[`Visite ${n} – Actif`] = v.querySelector(`[id^="actif_${n}"]`)?.value || "";
-    data[`Visite ${n} – Code client`] = v.querySelector(`[id^="codeclient_${n}"]`)?.value || "";
-    data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`[id^="type_client_${n-1}"] .chip.selected`)]
-      .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+  // 🔸 Récupération correcte des blocs
+  const blocNew  = document.getElementById(`bloc_new_${i+1}`);
+  const blocCode = document.getElementById(`bloc_code_${i+1}`);
+  const blocExec = document.getElementById(`bloc_exec_${i+1}`);
 
-    // Informations de géolocalisation
-    data[`Visite ${n} – Latitude`] = v.querySelector(`[id^="lat_${n}"]`)?.value || "";
-    data[`Visite ${n} – Longitude`] = v.querySelector(`[id^="long_${n}"]`)?.value || "";
+  // --- Actif ?
+  const isActif = v.querySelector('select')?.value || "";
+  data[`Visite ${n} – Actif`] = isActif;
 
-    // Disponibilité et activité
-    data[`Visite ${n} – Disponibilité`] = [...v.querySelectorAll(`#dispo_${n} .chip.selected`)]
+  // --- Nouveau client : on lit les champs même si bloc_exec/code sont cachés
+  data[`Visite ${n} – Nom client`] = blocNew?.querySelector(`[name^="nom_"]`)?.value || "";
+  data[`Visite ${n} – Prénom client`] = blocNew?.querySelector(`[name^="prenom_"]`)?.value || "";
+  data[`Visite ${n} – Téléphone`] = blocNew?.querySelector(`[name^="tel_"]`)?.value || "";
+  data[`Visite ${n} – Catégorie`] = blocNew?.querySelector(`[name^="categorie_"]`)?.value || "";
+
+  // --- Type client
+  data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`#type_client_${i+1} .chip.selected`)]
+    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+  data[`Visite ${n} – Type client autre`] = document.getElementById(`type_client_autre_${i+1}`)?.value || "";
+
+  // --- Coordonnées GPS
+  data[`Visite ${n} – Latitude`] = document.getElementById(`lat_${i+1}`)?.value || "";
+  data[`Visite ${n} – Longitude`] = document.getElementById(`long_${i+1}`)?.value || "";
+
+  // --- Code client (seulement si client existant)
+  data[`Visite ${n} – Code client`] = blocCode?.querySelector(`[id^="codeclient_"]`)?.value || "";
+  data[`Visite ${n} – Catégorie client`] = blocCode?.querySelector(`[id^="categorieclient_"]`)?.value || "";
+
+  // --- Source d'achat
+  data[`Visite ${n} – Source achats`] = [...v.querySelectorAll(`#achat_choices_${i+1} .chip.selected`)]
+    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+  data[`Visite ${n} – Autre achat`] = document.getElementById(`achat_autre_${i+1}`)?.value || "";
+
+  // --- Produits
+  data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${i+1} .chip.selected span`)]
+    .map(c => c.textContent.trim()).join(", ") || "";
+
+  // --- Réclamation / Remarques (uniquement si client actif)
+  if (isActif === "oui") {
+    data[`Visite ${n} – Réclamation`] = [...v.querySelectorAll(`#bloc_exec_${i+1} .choices .chip.selected`)]
       .map(c => c.textContent.trim()).join(", ") || "";
-    data[`Visite ${n} – Activité`] = [...v.querySelectorAll(`#activite_${n} .chip.selected`)]
-      .map(c => c.textContent.trim()).join(", ") || "";
+    data[`Visite ${n} – Remarque`] = v.querySelector(`[name^="remarque_"]`)?.value || "";
+    
+    // --- PLV (uniquement si client actif)
+    data[`Visite ${n} – PLV disponible`] = v.querySelector(`#bloc_exec_${i+1} select`)?.value || "";
+  } else {
+    data[`Visite ${n} – Réclamation`] = "";
+    data[`Visite ${n} – Remarque`] = "";
+    data[`Visite ${n} – PLV disponible`] = "";
+  }
 
-    // Produits choisis
-    data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n-1} .chip.selected span`)]
-      .map(c => c.textContent.trim()).join(", ") || "";
+  // --- Concurrence
+  data[`Visite ${n} – Concurrence visible`] = [...v.querySelectorAll(`#visibilite_concurrence_${i+1} .chip.selected`)]
+    .map(c => c.dataset.value || c.textContent.trim()).join(", ") || "";
+  data[`Visite ${n} – Concurrence autre`] = document.getElementById(`concu_autre_${i+1}`)?.value || "";
 
-    // Satisfaction livreur
-    data[`Visite ${n} – Satisfaction livreur`] = v.querySelector(`#satisfaction_${n} .chip.selected`)?.textContent.trim() || "";
+  // --- Potentiel marché
+  data[`Visite ${n} – Potentiel marché`] = [...v.querySelectorAll(`#potentiel_${i+1} .chip.selected`)]
+    .map(c => c.textContent.trim()).join(", ") || "";
 
-    // Observation marché
-    data[`Visite ${n} – Observation marché`] = v.querySelector(`[id^="observation_${n}"]`)?.value || "";
+  // --- Activités
+  data[`Visite ${n} – Activités sélectionnées`] = [...v.querySelectorAll(`#activites_${i+1} .chip.selected`)]
+    .map(c => c.dataset.group || c.textContent.trim()).join(", ") || "";
+});
 
-    // Remarques
-    data[`Visite ${n} – Remarque`] = v.querySelector(`[id^="remarque_${n}"]`)?.value || "";
-  });
-
-  console.log("🧾 Données collectées :", data);
+  console.log("✅ Données collectées :", data);
   return data;
+
 }
 
 /* ==========================================================
@@ -1772,27 +1807,26 @@ function collectFormData() {
 ========================================================== */
 function envoyerDonneesGoogleSheet() {
   const data = collectFormData();
-
-  const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec"; // ✅ correct
-
+  const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec";
   fetch(webhook, {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
   })
-    .then(r => r.text())
-    .then(res => {
-      alert("✅ Données envoyées avec succès !");
-      console.log("Réponse Google Apps Script :", res);
-    })
-    .catch(err => {
-      console.error("Erreur :", err);
-      alert("❌ Erreur lors de l’envoi des données.");
-    });
+  .then(r => r.text())
+  .then(res => {
+    alert("✅ Données envoyées avec succès !");
+    console.log("Réponse Google Apps Script :", res);
+  })
+  .catch(err => {
+    console.error("Erreur :", err);
+    alert("❌ Erreur lors de l’envoi des données. Vérifie les champs obligatoires.");
+  });
 }
 
 </script>
 </body>
 </html>
+
 
 
