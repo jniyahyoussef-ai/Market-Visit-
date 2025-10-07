@@ -4,6 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<div class="header-logo">
+  <img src="https://www.excelissia.com/assets/img/logo.webp" alt="Logo Excelissia">
+</div>
 <title>Trade Visit – Excelissia</title>
 <style>
   :root{
@@ -41,7 +44,7 @@
   .vendor-field .hint{font-size:12px;color:#223}
 /* Style d’erreur plus subtil : ligne rouge uniquement en bas */
 .field.error select,
-.field.error .choices {
+.field.error .choices {<select name="categorie_${visitIdx}" id="categorie_${visitIdx}" ...></select>
   border: none !important;
   border-bottom: 2px solid #d32f2f !important;
   background: transparent !important;
@@ -53,7 +56,6 @@
   color: #d32f2f;
   font-weight: 600;
 }
-
 /* === Optimisation du bloc Visite vendeur/livreur === */
 .vendor-grid {
   display: grid;
@@ -114,6 +116,11 @@
   .vendor-grid { grid-template-columns: 1fr; }
   .vendor-field { flex-wrap: wrap; justify-content: flex-start; gap: 6px; }
   .vendor-field .subgroup { flex: 1 1 45%; }
+}
+  .field.error label {
+    color: #d32f2f;
+    font-weight: 600;
+  }
 
   /* === Logo Excelissia === */
   .header-logo{
@@ -136,14 +143,11 @@
     }
   }
 </style>
+
+
+</style>
 </head>
 <body>
-  <body>
-  <div class="header-logo">
-    <img src="https://www.excelissia.com/assets/img/logo.webp" alt="Logo Excelissia">
-  </div>
-  <h1> </h1>
-
 <h1> </h1>
 
 <form id="questionnaire" autocomplete="off">
@@ -240,8 +244,7 @@
     <div id="visites"></div>
 
     <div style="text-align:right;margin-top:px">
-     <button type="button" class="btn" onclick="envoyerDonneesGoogleSheet()">📤 Envoyer</button>
-
+      <button class="btn" type="submit">Envoyer</button>
     </div>
   </div>
 
@@ -1720,7 +1723,7 @@ document.getElementById('questionnaire').addEventListener('submit', e=>{
   console.log('Header', {date:document.getElementById('datejour').value, dev:document.getElementById('nomdev').value, id:document.getElementById('idjournee').value});
   console.log('Section 1', data);
 });
-  /* ==========================================================
+/* ==========================================================
    ENVOI DES DONNÉES VERS GOOGLE SHEETS
 ========================================================== */
 function collectFormData() {
@@ -1737,10 +1740,10 @@ function collectFormData() {
 
   // Section 2
   data["Business Unit(s)"] = [...document.querySelectorAll("#bu_choices .chip.selected")]
-    .map(c => c.textContent).join(", ");
+    .map(c => c.textContent.trim()).join(", ");
   data["Méthode"] = document.getElementById("methode")?.value || "";
   data["Objectif(s) terrain"] = [...document.querySelectorAll("#objectifs_zone .chip.selected")]
-    .map(c => c.textContent).join(", ");
+    .map(c => c.textContent.trim()).join(", ");
 
   // Section 3 – Boucle sur toutes les visites
   const visites = document.querySelectorAll(".visit");
@@ -1749,18 +1752,16 @@ function collectFormData() {
     data[`Visite ${n} – Actif`] = v.querySelector("select")?.value || "";
     data[`Visite ${n} – Code client`] = v.querySelector('[id^="codeclient_"]')?.value || "";
     data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`[id^="type_client_${n-1}"] .chip.selected`)]
-  .map(c => c.dataset.value).join(", ");
       .map(c => c.dataset.value).join(", ");
     data[`Visite ${n} – Latitude`] = v.querySelector('[id^="lat_"]')?.value || "";
     data[`Visite ${n} – Longitude`] = v.querySelector('[id^="long_"]')?.value || "";
-
-    // Produits choisis
-  data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n-1} .chip.selected span`)]
-  .map(c => c.textContent).join(", ");
+    data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n-1} .chip.selected span`)]
+      .map(c => c.textContent).join(", ");
   });
 
   return data;
 }
+
 function envoyerDonneesGoogleSheet() {
   const data = collectFormData();
   const webhook = "https://script.google.com/macros/s/AKfycbxf0KduBnd9VSRa4Elw6l-tmOFSuuizFZwjPpgvOUOiFJoIx58R21eDaMg1e7oEdqta/exec";  // ✅ correct
@@ -1781,9 +1782,6 @@ function envoyerDonneesGoogleSheet() {
   });
 }
 
-
 </script>
 </body>
 </html>
-
-
