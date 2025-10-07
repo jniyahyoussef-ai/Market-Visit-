@@ -1729,45 +1729,63 @@ document.getElementById('questionnaire').addEventListener('submit', e=>{
 ========================================================== */
 function collectFormData() {
   const data = {};
+
+  // Section 1
   data["Date du jour"] = document.getElementById("datejour")?.value || "";
   data["ID Journée"] = document.getElementById("idjournee")?.value || "";
   data["Responsable"] = document.getElementById("nomdev")?.value || "";
   data["Site"] = document.getElementById("site")?.value || "";
   data["Secteur"] = document.getElementById("secteur")?.value || "";
   data["Tournée(s)"] = [...document.querySelectorAll("#tournee-zone .chip.selected")]
-    .map(c => c.dataset.value)
-    .join(", ") || "—";
+    .map(c => c.dataset.value).join(", ");
+
+  // Section 2
   data["Business Unit(s)"] = [...document.querySelectorAll("#bu_choices .chip.selected")]
-    .map(c => c.textContent.trim())
-    .join(", ") || "—";
-  data["Méthode"] = document.getElementById("methode")?.value || "—";
+    .map(c => c.textContent).join(", ");
+  data["Méthode"] = document.getElementById("methode")?.value || "";
   data["Objectif(s) terrain"] = [...document.querySelectorAll("#objectifs_zone .chip.selected")]
-    .map(c => c.textContent.trim())
-    .join(", ") || "—";
-  data["Nombre de visites"] = document.querySelectorAll(".visit").length;
+    .map(c => c.textContent).join(", ");
+
+  // Section 3 – Boucle sur toutes les visites
+  const visites = document.querySelectorAll(".visit");
+  visites.forEach((v, i) => {
+    const n = i + 1;
+    data[`Visite ${n} – Actif`] = v.querySelector("select")?.value || "";
+    data[`Visite ${n} – Code client`] = v.querySelector('[id^="codeclient_"]')?.value || "";
+    data[`Visite ${n} – Type client`] = [...v.querySelectorAll(`[id^="type_client_${n-1}"] .chip.selected`)]
+      .map(c => c.dataset.value).join(", ");
+    data[`Visite ${n} – Latitude`] = v.querySelector('[id^="lat_"]')?.value || "";
+    data[`Visite ${n} – Longitude`] = v.querySelector('[id^="long_"]')?.value || "";
+
+    // Produits choisis
+    data[`Visite ${n} – Produits`] = [...v.querySelectorAll(`#produits_${n-1} .chip.selected span`)]
+      .map(c => c.textContent).join(", ");
+  });
+
   return data;
 }
-
-  function envoyerDonneesGoogleSheet() {
+function envoyerDonneesGoogleSheet() {
   const data = collectFormData();
-  const webhook = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbx02nyzL2-vD0AeY1acIviIGFeH9w-yW689QH_Ujag_1TcRjzCmFCaqjGIaDxZ4vBot/exec"; // ← à remplacer
+  const webhook = "https://script.google.com/macros/s/AKfycbx02nyzL2-vD0AeY1acIviIGFeH9w-yW689QH_Ujag_1TcRjzCmFCaqjGIaDxZ4vBot/exec";  // ✅ correct
 
   fetch(webhook, {
     method: "POST",
     body: JSON.stringify(data),
     headers: { "Content-Type": "application/json" }
   })
-  .then(response => response.text())
-  .then(result => {
+  .then(r => r.text())
+  .then(res => {
     alert("✅ Données envoyées avec succès !");
-    console.log("Réponse Google Apps Script:", result);
+    console.log("Réponse Google Apps Script :", res);
   })
-  .catch(error => {
-    console.error("Erreur d’envoi :", error);
-    alert("❌ Erreur lors de l’envoi des données !");
+  .catch(err => {
+    console.error("Erreur :", err);
+    alert("❌ Erreur lors de l’envoi des données.");
   });
 }
+
 
 </script>
 </body>
 </html>
+
