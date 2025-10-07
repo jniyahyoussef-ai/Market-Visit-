@@ -4,6 +4,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<div class="header-logo">
+  <img src="https://www.excelissia.com/assets/img/logo.webp" alt="Logo Excelissia">
+</div>
 <title>Trade Visit – Excelissia</title>
 <style>
   :root{
@@ -15,33 +18,33 @@
   body{background:#fff;font-family:Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);margin:0;padding:24px}
   h1,h2{margin:0 0 12px 0;text-align:center;color:var(--brand)}
   .section{border:1px solid var(--line);border-radius:12px;padding:18px;margin:0 auto 20px auto;max-width:1150px;background:var(--card)}
-  .row{display:flex;flex-wrap:wrap;gap:14px}
+  .row{display:flex;flex-wrap:wrap;gap:12px}
   .field{flex:1 1 260px;min-width:220px}
   label{display:block;margin-bottom:6px;font-weight:600}
   input,select,textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#000}
   textarea{min-height:90px}
   .choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
-  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--chip-b);border-radius:12px;background:var(--chip);cursor:pointer;user-select:none}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--chip-b);border-radius:10px;background:var(--chip);cursor:pointer;user-select:none}
   .chip.selected{background:var(--brand);color:#fff;border-color:var(--brand)}
-  .btn{background:var(--brand);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer;font-weight:600}
+  .btn{background:var(--brand);color:#fff;border:none;padding:10px 12px;border-radius:8px;cursor:pointer;font-weight:600}
   .btn-ghost{background:transparent;border:1px dashed var(--brand);color:var(--brand)}
   .hidden{display:none}
   .help{font-size:12px;color:var(--muted);margin-top:4px}
   hr.sep{border:none;border-top:1px dashed var(--line);margin:10px 0}
-  .visit{border:1px dashed var(--line);border-radius:12px;background:#fff;margin-top:14px;overflow:hidden}
+  .visit{border:1px dashed var(--line);border-radius:12px;background:#fff;margin-top:12px;overflow:hidden}
   .visit-header{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f3f6ff;border-bottom:1px dashed var(--line);cursor:pointer}
   .visit-title{font-weight:700;color:var(--brand)}
   .visit-body{padding:12px}
   .btn-remove{background:var(--danger);color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer}
   .readonly{background:#eee;cursor:not-allowed}
   /* “BU style” pour le bloc livreur */
-  .vendor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:14px}
+  .vendor-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:12px}
   .vendor-field{display:flex;align-items:center;gap:10px;background:#f0f4ff;border:1px dashed var(--line);border-radius:8px;padding:8px}
   .vendor-field .main{font-weight:700;min-width:120px;color:var(--brand)}
   .vendor-field .hint{font-size:12px;color:#223}
 /* Style d’erreur plus subtil : ligne rouge uniquement en bas */
 .field.error select,
-.field.error .choices {
+.field.error .choices {<select name="categorie_${visitIdx}" id="categorie_${visitIdx}" ...></select>
   border: none !important;
   border-bottom: 2px solid #d32f2f !important;
   background: transparent !important;
@@ -53,12 +56,99 @@
   color: #d32f2f;
   font-weight: 600;
 }
+/* === Optimisation du bloc Visite vendeur/livreur === */
+.vendor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); /* plus compact */
+  gap: 8px;
+}
+
+.vendor-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f5f7ff;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+
+.vendor-field .main {
+  font-weight: 700;
+  color: var(--brand);
+  min-width: 80px;
+}
+
+.vendor-field .subgroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+}
+
+.vendor-field .hint {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.vendor-field .choices.mini {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+
+.vendor-field .choices.mini .chip {
+  padding: 4px 10px;
+  font-size: 12px;
+  min-width: 45px;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.vendor-field .choices.mini .chip.selected {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+
+@media(max-width:600px){
+  .vendor-grid { grid-template-columns: 1fr; }
+  .vendor-field { flex-wrap: wrap; justify-content: flex-start; gap: 6px; }
+  .vendor-field .subgroup { flex: 1 1 45%; }
+}
+  .field.error label {
+    color: #d32f2f;
+    font-weight: 600;
+  }
+
+  /* === Logo Excelissia === */
+  .header-logo{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .header-logo img{
+    max-width:100px;
+    height:auto;
+    border-radius:6px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    transition:transform .2s ease;
+  }
+  .header-logo img:hover{
+    transform:scale(1.05);
+  }
+  @media (max-width:600px){
+    .header-logo img{
+      max-width:130px;
+    }
+  }
+</style>
 
 
 </style>
 </head>
 <body>
-<h1>Questionnaire Terrain</h1>
+<h1> </h1>
 
 <form id="questionnaire" autocomplete="off">
 
@@ -111,7 +201,7 @@
 
   <!-- ====================== SECTION 2 ====================== -->
   <div class="section s2 hidden">
-    <h2>Section 2 – Informations Générales</h2>
+    <h2>Section 2 – Détail TV </h2>
 <!-- Bloc Section 2 – Informations Générales réorganisé -->
 <div class="field">
   <label>Business Unit(s) *</label>
@@ -153,8 +243,9 @@
 
     <div id="visites"></div>
 
-    <div style="text-align:right;margin-top:16px">
-      <button class="btn" type="submit">Envoyer</button>
+    <div style="text-align:right;margin-top:px">
+     <button type="button" class="btn" onclick="envoyerDonneesGoogleSheet()">📤 Envoyer</button>
+
     </div>
   </div>
 
@@ -178,18 +269,893 @@ function genIdJournee(){
    Sites → Secteurs → Tournées (exemples réalistes)
    (Format tournées en CHIPS cochables)
 =========================================================== */
-const cascade={
-  "CEN":{
-    "2MARS_SDMAAROUF":["ALMOSTAKBAL","DAMANE","EL HIDIOUIA","FLOURIDA","HOPITAUX"],
-    "ACHOCK_DBSULTAN":["AIN CHOK","BALADIA","BOUCHENTOUF","DERB CHORFA","KOREA"]
+const cascade = {
+  "CEN": {
+    "2MARS_SDMAAROUF": [
+      "ALMOSTAKBAL",
+      "DAMANE",
+      "EL HIDIOUIA",
+      "FLOURIDA",
+      "HOPITAUX",
+      "KASBAT LAMINE",
+      "KHOUZAMA",
+      "L'HERMITAGE",
+      "LISSASFA 2",
+      "NAJAH",
+      "NASSIM",
+      "OASIS"
+    ],
+    "ACHOCK_DBSULTAN": [
+      "AIN CHOK",
+      "BALADIA",
+      "BIN LAMDOUN",
+      "BOUCHENTOUF",
+      "DERB CHORFA",
+      "DERB LIHOUDI /HABOUS",
+      "FOUKARA",
+      "HAFFARI1",
+      "HAY MASSJID",
+      "KOREA",
+      "MLY ABDALLAH 1",
+      "MLY ABDALLAH 2"
+    ],
+    "AZHAR_BERNOUSSI": [
+      "AIN HAROUDA",
+      "AL AZHAR AL FAJR",
+      "ALQODS",
+      "ATA QADOUM",
+      "AZHAR 2 MADINATI",
+      "AZHAR SAKANI",
+      "HAY AL MOUBARAKA",
+      "HAY ALMANSOUR",
+      "HAY AMAL",
+      "HAY CHABAB",
+      "LAMAAGUIZ",
+      "SAADA"
+    ],
+    "BOSKORA_HDSOUALEM": [
+      "ANDALOUS ZI",
+      "AZEMMOUR 1",
+      "AZEMMOUR 2",
+      "BEN HMAD 2",
+      "BEN HMED 1",
+      "BIRJDID",
+      "BOUSKOURA 1",
+      "BOUSKOURA 2",
+      "HAD SWALAM 1",
+      "HAD SWALAM 2",
+      "SIDI RAHAL",
+      "VICTORIA"
+    ],
+    "BOUZNIKA_BNSLIMAN": [
+      "BOUZNIKA",
+      "BOUZNIKA PLAGE",
+      "DARWA 1",
+      "DARWA 2",
+      "DARWA 3",
+      "HAY HODA",
+      "JAMAAT FDALET",
+      "NOUASSER",
+      "TISSIR 2",
+      "TIT MELIL",
+      "TRN BENSLIMANE01",
+      "TRN BENSLIMANE02"
+    ],
+    "CEN_SUP1": [
+      "SUP_AIN DIAB / CIL",
+      "SUP_ALMAZ SUP",
+      "SUP_ATA QADOUM",
+      "SUP_BORGOGNE SUP",
+      "SUP_CENTREVILLE SUP",
+      "SUP_HAY ALMANSOUR",
+      "SUP_MAARIF EXT 1",
+      "SUP_MAARIF SUP",
+      "SUP_MANDAROUNA SUP",
+      "SUP_MOHAMADIA 1 SUP",
+      "SUP_MOHAMADIA 2 SUP",
+      "SUP_NOUACER SUP",
+      "SUP_OASIS SUP",
+      "SUP_SD MAAROUF SUP",
+      "SUP_TAMARIS SUP"
+    ],
+    "CENTREV_HMOHAMADI": [
+      "AL AMANE HLIWA",
+      "BEL VEDAIRE",
+      "CENTRE VILLE CASA",
+      "CHAABI",
+      "DARLAMANE/ MACHROUE",
+      "EL WAHDA / OKACHA",
+      "FAILLETTE-ROCH NOIR",
+      "JACK MAN_1",
+      "MARCHE AINSBA/MIMOSA",
+      "MARICHEL",
+      "MARS SOLTANE",
+      "TAKADOUM KASTOR"
+    ],
+    "ELJADIDA": [
+      "ASSAADA",
+      "CNTR VILLE ELJADIDA",
+      "DERB GHALEF-SID DAWI",
+      "GEORGE /SFAA",
+      "HAY AMAL MALK CHAIKH",
+      "HAY SALAM",
+      "HY MATAR",
+      "MANAR NARJISSE",
+      "MOUILHA EL KHIARI",
+      "SAADA BANNANI",
+      "SIDI BOUZID",
+      "SIDI MOUSSA ELJADIDA"
+    ],
+    "ERRAHMA": [
+      "ATTAWHIDE",
+      "IRAKI",
+      "JNAN LOUZ",
+      "OUAD MERZAG",
+      "RAHMA 1",
+      "RAHMA 2",
+      "RAHMA FATH",
+      "RAHMA OULAD HMED",
+      "RAHMA ROUTE ZI",
+      "RIAD BAYTI SAKAN",
+      "RIAD EL OULFA 2",
+      "TAMARISSE"
+    ],
+    "FARAH_LAGIRONDE": [
+      "AIN BOURJA",
+      "AMALE",
+      "BOURNNAZIL",
+      "CENTREVILLE_HMOHAMADI",
+      "DERB KABIR",
+      "DERB MILAN",
+      "DRISSIYA",
+      "FOUARATE/MOUAHIDINE",
+      "HAY FARAH",
+      "HAY TISSIRE",
+      "LA CIGOGNE",
+      "LA GIRONDE",
+      "LA VILETTE"
+    ],
+    "MAARIF_BOURGOGNE": [
+      "AIN DIAB / CIL",
+      "BEAUSÉJOUR",
+      "BOURGOUNE",
+      "DERB GHALAF",
+      "GOULMIMA",
+      "LOUBILA",
+      "MAARIF CENTRE",
+      "MAARIF EXT 1",
+      "MAARIF EXT 2",
+      "PALMIER",
+      "RACINE",
+      "TASAHOUL"
+    ],
+    "MEDIOUNA_INARA": [
+      "HALHAAL",
+      "HAY AL OSRA",
+      "INARA",
+      "LAHRAOUIYINE 1",
+      "LAHRAOUIYINE 2",
+      "MANDAROUNA",
+      "MEDIOUNA 1",
+      "MEDIOUNA 2",
+      "MEDIOUNA 3",
+      "MKANSA",
+      "MZABIYINE",
+      "SALMIA"
+    ],
+    "MOHAMMEDIA": [
+      "BENI KHLAF/ LOUIZIA",
+      "CHABAB / EL HOURIYA / HAY RIAD",
+      "COLLINE / RAID SALAM",
+      "DERB JAMILA",
+      "DERB MARRAKECH SAADA",
+      "EL WAFA / MONICA /KASBA",
+      "FATH DYOUR LALIA",
+      "HASSANIA 1",
+      "HASSANIA 2 HAY NASR",
+      "HOURIA DERB CHABAB",
+      "HOURIA LACOLINE",
+      "IBN KHALFE / LAWIZYA",
+      "KASBA MEKZAZ",
+      "RACHIDIA",
+      "RACHIDIA 1 / 2 3",
+      "RIAD SALAM",
+      "WAFA CORNICH"
+    ],
+    "OULFA_HHASSANI": [
+      "CHAHDIA",
+      "DERB EL AMAL",
+      "EL FIRDAWS",
+      "EL MAALAM ABDELAH",
+      "EL WIFAK OULFA",
+      "FARAH SALAM",
+      "HAJ FATAH",
+      "MAZOULA",
+      "RIAD EL OULFA",
+      "SIDI EL KHADIR",
+      "WARDA / DARB NAJMA",
+      "ZOUBIR"
+    ],
+    "SBATA_SDMOUMEN": [
+      "AHL LAGHLAM",
+      "ALHAMD",
+      "ANASSI 1",
+      "ANASSI 2",
+      "BOULVARD DAKHLA",
+      "ELBAIDAA / NAHDA",
+      "HAY ALQARIA",
+      "JAWHARA",
+      "OUAD DAHAB",
+      "SAADA / EL HOUDA",
+      "TACHAROUK",
+      "TACHAROUK/BAB ANASSI"
+    ],
+    "SDOTHMAN_MYRACHID": [
+      "ELBALADIA",
+      "HAY COSUMAR/ SADRI",
+      "HAY ESSALAMA 3",
+      "HAY FALAH/MLY RCHID1",
+      "HAY HMARA",
+      "HAY MABROUKA",
+      "IFRIQUIA",
+      "KISSARIA-MADANIYA",
+      "MASSOUDIA",
+      "MLY RCHID GRPE1 ET 2",
+      "OTMANIA",
+      "SIDI OTHMAN"
+    ],
+    "SETTAT": [
+      "BATOIR ZAD GHIRR",
+      "BEN CHAYB",
+      "CENTRE VILLE SETTAT",
+      "KHMIS MHMAD BENRAHAL",
+      "MAHATA BEN KASEM",
+      "MIMOUNA KAMAL",
+      "MOJAMAA ALKHIR",
+      "PAM SETTAT",
+      "QUODS",
+      "SALAM KETAA CHEIKH",
+      "SMAALA",
+      "TISSIR 1"
+    ]
   },
-  "AGA":{
-    "AGADIR_CENTRE":["CENTRE VILLE","DAKHLA","EL MASSIRA","JET SAKAN","TILILA"],
-    "AITMELOUL_DCHIERA":["AIT MELLOUL 1","AIT MELLOUL 2","DRARGA","INZEGAN 1","INZEGAN 2"]
+  "AGA": {
+    "AGA_SUP1": [
+      "SUP_AGADIR VILLE CENTRE",
+      "SUP_AIT MELLOUL 2",
+      "SUP_AIT MELLOUL EXTER",
+      "SUP_DAKHLA ELMASSIRA",
+      "SUP_DCHEIRA INZEGAN",
+      "SUP_EL HOUDA JET SAKAN",
+      "SUP_ELHOUDA",
+      "SUP_HYMOHAMMEDI DRARGA"
+    ],
+    "AGADIR_CENTRE": [
+      "CENTRE VILLE AGADIR",
+      "CHARAF/IHCHACH",
+      "DAKHLA",
+      "EL HOUDA JET SAKAN",
+      "EL MASSIRA",
+      "ELHOUDA",
+      "ERAAC",
+      "HAY QODS",
+      "JET SAKAN",
+      "LES AMIKAL",
+      "LIKHYAM_AMSIRNT",
+      "SALAAM",
+      "TILILA"
+    ],
+    "AITMELOUL_DCHIERA": [
+      "AIT MELLOUL 2",
+      "AIT MELOUL 2",
+      "AIT MELOULE 1",
+      "BENSERGAO",
+      "DCHEIRA 1",
+      "DCHEIRA 2",
+      "DRARGA",
+      "EL BATOIRE",
+      "ELJIHADIA",
+      "HAY MOHAMMEDI",
+      "INZEGAN 1",
+      "INZEGAN 2",
+      "TIKIOUINE"
+    ],
+    "HOUARA_BELFAA": [
+      "AGADIR VILLE CENTRE",
+      "AIT BAHA",
+      "ANZAA",
+      "AWRIR",
+      "AZROU NOUVELLE",
+      "BELFAA NOUVELLE",
+      "BEUGRA",
+      "BIOUGRA",
+      "KOLEA NOUVELLE",
+      "MASSA",
+      "SIDI BIBI NOUVELLE",
+      "TADART",
+      "TAGHAZOUT",
+      "TAMRI"
+    ],
+    "LAAYOUNE": [
+      "AV BOUKRAA",
+      "AV MAKKA",
+      "AV WAKALA",
+      "DIRIDIK",
+      "DOUAR ELMKHAZNIA",
+      "DWIRATE ELMESTAKBAL",
+      "DWIRATE ELMESTAKBAL2",
+      "PLAYAA LAA 1",
+      "PLAYAA LAA 2",
+      "TANMIA ELMASIRA"
+    ],
+    "TAROUDANT": [
+      "AIT IAAZA",
+      "AWLOUZ",
+      "OULAD BERHIL",
+      "OULAD TAIMA 1",
+      "OULAD TAIMA 2",
+      "SIBTEL GIRDAN",
+      "TALIOUINE",
+      "TAROUDANT 1",
+      "TAROUDANT 3",
+      "TAROUDANT 4",
+      "TAROUDANT 5",
+      "TAROUDANTE 2"
+    ],
+    "TIZNIT": [
+      "ANZI TIGMIR",
+      "GEULMIM 1",
+      "GUELMIM 2",
+      "MIRLEFT",
+      "SIDI IFNI",
+      "TAFRAOUTE",
+      "TIZNIT 1",
+      "TIZNIT 2",
+      "TIZNITE 3"
+    ]
   },
-  "RAB":{
-    "RABAT_1":["AGDAL 1","AGDAL 2","OCEAN 1","HAY RIAD","KAMRA 1"],
-    "SALE_1":["HAY CHMAOU","HAY RAHMA","SAID HAJI","SIDI MOUSSA","MDINA SALE"]
+  "MAR": {
+    "ASFI": [
+      "AAZIB DERAI HS",
+      "AZIB ADARII",
+      "BIYADDA",
+      "ELMASSIRA LAMIA",
+      "HAY ANASS",
+      "HAY ELMATTAR",
+      "HAY ESSALAM",
+      "HAY ESSALAM HS",
+      "JENANE MESSTARI",
+      "PLATAUXCENTRE ASAFI",
+      "RTSAFI JAMATSHAYM",
+      "SIDI BOZID"
+    ],
+    "CENTRE_MARRAKECH": [
+      "BAB DOKALA",
+      "BAB GHMATE",
+      "BAB TAGHZOUTE",
+      "BRIMA",
+      "GUELIZ ABWAB MAR",
+      "GUELIZ HIVERNAGE",
+      "GUELIZ SMLALIYA",
+      "LMOUKEF",
+      "LMSSLLA",
+      "RUE MBARK",
+      "SIDI MIMOUN KASSBA",
+      "SSYSSAN"
+    ],
+    "DAOUDIATE": [
+      "AIN ITTI",
+      "ALLAL EL FASSI",
+      "AMERCHICH",
+      "BELBKAR",
+      "IEDIHAR / CHARAF",
+      "LBADII-ROUTE CASA",
+      "ROUIDATE",
+      "SIDI ABBAD/ISSIL 1",
+      "SSADA/AL FADL",
+      "UNITE 1+ 2",
+      "UNITE 3+TAKDOM",
+      "UNITE 4+5"
+    ],
+    "MAR_SUP1": [
+      "SUP_AIN ITTI",
+      "SUP_AIN MEZOIR-SOKOMA",
+      "SUP_ALLAL FASI+LES UNITE",
+      "SUP_BOUAKAZ- MHAMID LKWS",
+      "SUP_BOUAKKAZ",
+      "SUP_DAOUDIYATE",
+      "SUP_DOHA",
+      "SUP_GUELIZ ABWAB MAR",
+      "SUP_HARBIL TAMANSOURT",
+      "SUP_ISILL+BADIAA RT CASA",
+      "SUP_IZDIHAR/SAADA",
+      "SUP_MARRAKECH CENTRE",
+      "SUP_MASSIRA",
+      "SUP_MASSIRA 1",
+      "SUP_MASSIRA 2",
+      "SUP_MHAMID 1",
+      "SUP_MHAMID 2",
+      "SUP_MHAMID BRD+MHAMID 9",
+      "SUP_MHAMID CENTRE",
+      "SUP_TAMANSSOUTE",
+      "SUP_TARGA"
+    ],
+    "MARRAKECH_EXT": [
+      "AIT AOURIR 1",
+      "AIT AOURIR 2",
+      "AMAZMIZ",
+      "BEN GRIRE 1",
+      "BEN GRIRE 2",
+      "CHICHAOUA",
+      "LOUDAYA",
+      "OURIKA-TAHNOUTE",
+      "ROUTE OUARZAZTE",
+      "RT OUARZAZTE-TADARTE",
+      "RT-OURIKA",
+      "TAHNAOUT-CHRIFIYA",
+      "TEMLALTE"
+    ],
+    "MASSIRA": [
+      "AFAQ ROUTE SOUIHLA",
+      "AZZOUZIA",
+      "DOHA MASSIRA3",
+      "HARBILE EL MASSAR",
+      "HAY EL BAHJA",
+      "HAY ZITOUNE",
+      "INARA SIDI MBARK",
+      "MASIRA 1 AHBASS",
+      "MASIRA 1 ELGHARB",
+      "MASSIRA 2 A",
+      "TAMANSSOUTE",
+      "TARGA ZONE IND"
+    ],
+    "MHAMID": [
+      "AIN MEZOIR",
+      "AZLI NORD",
+      "AZLI SUD",
+      "BOUAKKAZ",
+      "MAAT ALLAH",
+      "MHAMID 9",
+      "MHAMID BRRADI",
+      "MHAMID EL HOUSNA",
+      "MHAMID LAKDIM",
+      "MHAMID LAKWAS",
+      "MHAMID NAHDA",
+      "SOUKOUMA"
+    ],
+    "OUARZAZATE": [
+      "AGDOUZ",
+      "AGUME-TELOUAT",
+      "KALLA MAGOUNA",
+      "OURZZAZATE DR CHANSE",
+      "OURZZAZATE MARCHE",
+      "OURZZAZATE TABOUNTE",
+      "OURZZAZTE AIT KDIFE",
+      "OURZZAZTE IRAQ",
+      "TAZNA",
+      "ZAGOURA"
+    ]
+  },
+  "BEN": {
+    "BENIMELLAL_TADLA": [
+      "ABIJAAD MOHAMED 5",
+      "AFOURAR",
+      "AZILAL",
+      "BAB FTTOUH_1",
+      "CENTRE VIL BM",
+      "CHARAF_1",
+      "KASBAH TADLA",
+      "KASTOR_1",
+      "KASTOR_2",
+      "MASSIRA_1",
+      "OULLED HAMDANE_1",
+      "RIAD ESSALAM_1",
+      "SAFAA_1"
+    ],
+    "KHENIFRA": [
+      "AIT ISHAQ/TIGHSSALIN",
+      "AMALOU",
+      "CENTRE VILLE KHNIFRA",
+      "HAY LFATH KHNIFRA",
+      "K'SIBAH",
+      "LASSIRI",
+      "LEKBAB",
+      "MRIRTE",
+      "MRIRTE 2",
+      "PAM BEN",
+      "TAMOUMANT",
+      "ZAOUIA CHEIKH"
+    ],
+    "KHOURIBGA_FBS": [
+      "BD ABDERAHIM BD IRAK",
+      "BD.ABDERAHIM BOUABID IRAK",
+      "CENTRE VIL KHOURIBGA",
+      "CENTRE VILLE KHOURIBGA",
+      "FATH",
+      "FKIH BEN SALAH 1",
+      "FKIH BEN SALAH 2",
+      "FKIH BEN SALEH (MERCREDI )",
+      "HAMROUKAT-KH",
+      "HAY RAID INBIRATE",
+      "HAY ZITOUNE-KH",
+      "MASSIRA YASMINE",
+      "NAHDA",
+      "OUED ZEME 1",
+      "OUED ZEME 2"
+    ]
+  },
+  "FES": {
+    "FES_CENTRE1": [
+      "ADARISSA FARAH 1",
+      "AIN CHKAFE 1",
+      "AIN CHKAFE 2",
+      "AIN CHKEF 3",
+      "ASSAADA FARAH 2",
+      "AZHAR",
+      "BABFTOUH",
+      "CHAMPS DE COURSE",
+      "HAY TARIK 1",
+      "LA BITA MOUWADAFINE",
+      "LA GARE",
+      "SIDI BRAHIM"
+    ],
+    "FES_CENTRE2": [
+      "ATLASS BOUROMANA",
+      "BEN DABAB 1/2",
+      "BENSOUDA 1",
+      "BENSOUDA 2",
+      "BENSOUDA 3",
+      "FE_AMALE 4+ GR 5",
+      "KARAOUIYEN NARJIS 3",
+      "L'ERAC",
+      "MOUFLOURI 1",
+      "MOUFLOURI 2",
+      "NARJIS 1",
+      "NARJIS 2",
+      "OUAD FES 1/2",
+      "OUINAT EL HAJJAJ"
+    ],
+    "FES_EXT": [
+      "AIN CHGAG",
+      "AZROU 2",
+      "AZZROU",
+      "BOUFAKRANE/JERRY",
+      "EL HAJEB",
+      "IFRANE",
+      "OLD TAYB-IMOZAR KNDR",
+      "SBAA AYOUNE",
+      "SEFROU 1",
+      "SEFROU2",
+      "SEFROU3",
+      "TAOUJTAT"
+    ],
+    "MEKNES_CENTRE1": [
+      "BARJ 1",
+      "BASSATINE 1",
+      "ELBASSATINE 2",
+      "ELBASSATINE 3",
+      "HAMRIA 1",
+      "KAMILYA / INBI33ATE",
+      "MANSOUR1",
+      "OUJEH AAROUSS",
+      "Qortoba",
+      "SIDI BOUZAKRI",
+      "TOULAL CENTRE",
+      "ZITOUN 2"
+    ],
+    "MEKNES_CENTRE2": [
+      "Anassi",
+      "BARJ 2",
+      "BARJ 3",
+      "BARJ MACH KOUK",
+      "FE_HAY ESSALAM",
+      "MARJANE 2",
+      "MARJANE 3",
+      "PLACE D'ARME",
+      "SBATA",
+      "SIDI AMAR /LKASBA",
+      "WISSLAN /1",
+      "WISSLAN/2"
+    ],
+    "TAZA": [
+      "AKNOUL",
+      "BINJRADI",
+      "BITGHLAM",
+      "FRIWATO",
+      "GUERSIF",
+      "LKOUCHA",
+      "LQODS",
+      "MASSIRA +LQODS",
+      "TAHLA",
+      "TAZA / OUED AMLIL",
+      "TAZA 2",
+      "TRIK LWAHDA"
+    ]
+  },
+  "OUJ": {
+    "HOCEIMA": [
+      "AL HOCEIMA",
+      "AL HOCEIMA CENTRE",
+      "BEN TAYEB",
+      "BNI BOUAYACHE",
+      "DRIOUECH",
+      "IMZOURENE",
+      "IMZOURENE2",
+      "KACITA",
+      "MIDARE",
+      "SABADIA",
+      "TAMSAMANE",
+      "TARGUISTE"
+    ],
+    "NADOR": [
+      "AL AROUI",
+      "AL KARIAT",
+      "AL MASSIRA NADOR",
+      "ARRED",
+      "BNIANSSARE",
+      "FARKHANA / BNICHIKER",
+      "FERKHANA",
+      "JAADAR",
+      "OULAD MIMOUN",
+      "SAKIA AL HAMRA",
+      "SELOUANE",
+      "ZAIO",
+      "ZEGANGAN"
+    ],
+    "OUJDA_1": [
+      "AL ANDALOUSSE",
+      "AL AUNIA",
+      "OUJ_ QODS 1",
+      "OUJ_ QODS 2",
+      "OUJ_AL AUNIA",
+      "OUJ_ANDALOUS",
+      "OUJ_BOUDIR",
+      "OUJ_CENTRE VILLE",
+      "OUJ_HAY PAM",
+      "OUJ_LAZARET",
+      "OUJ_MY MILOUD",
+      "OUJ_OSLOU",
+      "OUJ_SIDI-YAHYA",
+      "OUJ_ZITOUNE"
+    ],
+    "OUJDA_2": [
+      "HAY AL WAHDA",
+      "KADA - WAHDA NOUR",
+      "OUED ENNACHEF",
+      "OUJ_EL FATH",
+      "OUJ_ENASSER",
+      "OUJ_ESSLAM LAR",
+      "OUJ_HAY ALWAHDA",
+      "OUJ_JAWHARA",
+      "OUJ_LA GARE",
+      "OUJ_LAMHALLA",
+      "OUJ_LES IRIS",
+      "OUJ_OUAD NACHAF",
+      "OUJ_SILAKHDARE",
+      "OUJ_TAYRET",
+      "OUJ_TOBA",
+      "SILAKHDARE"
+    ],
+    "OUJDA_EXT": [
+      "AHFIRE",
+      "BER-BAYOO",
+      "BER-SIDI SLIMANE",
+      "BNI DRARE",
+      "JERADA 1",
+      "JERADA 2",
+      "LAAYOUNE 1",
+      "LAAYOUNE 2",
+      "LIMOUNE",
+      "SAIDIA / CAPDELEAU",
+      "TAOURIRT ENTREE",
+      "TAOURIRTE 1",
+      "TAOURIRTE 2"
+    ]
+  },
+  "RAB": {
+    "KENITRA_1": [
+      "ALLIANCE",
+      "EL HAOUZIA",
+      "KASBHA",
+      "KASBHA 2",
+      "LA VILLE HAUTE",
+      "LA VILLE HAUTE 2",
+      "MAGHRIB ARRABI",
+      "MAHDIA",
+      "MIMOUSSA",
+      "OULAD OUJIH",
+      "SAYAD",
+      "SAYAD 2"
+    ],
+    "KENITRA_2": [
+      "BAB FAS",
+      "BIR RAMI",
+      "BIR RAMI 2",
+      "CENTRE VILLE KENITRA",
+      "EL ALAMA",
+      "EL OUAFAA",
+      "FOUWARAT",
+      "HAY ELFATH ET AMAL",
+      "HY ELFATH",
+      "KHBAZAT",
+      "LHALOUF WLLAD ARFA",
+      "SAKNIA"
+    ],
+    "RAB_SUP1": [
+      "SUP_AGDAL SUP",
+      "SUP_EL FATEH SUP",
+      "SUP_EL HARHOURA SUP",
+      "SUP_HASSAN SUP",
+      "SUP_HAY RIAD SUP",
+      "SUP_HAY SALAM SUP",
+      "SUP_NAHDA SUP",
+      "SUP_OCEAN SUP",
+      "SUP_SAID HAJI SUP",
+      "SUP_SALA JADIDA SUP",
+      "SUP_SALE CENTRE 1 HM",
+      "SUP_SIDI MOUSSA SUP",
+      "SUP_TEMARA SUP"
+    ],
+    "RABAT_1": [
+      "AGDAL 1",
+      "AGDAL 2",
+      "AKARRI",
+      "BITATE",
+      "EL MHARIK",
+      "HAY RAID",
+      "KAMRA 1",
+      "KAMRA 2",
+      "KSAR LBRAHH",
+      "KWASSS",
+      "OCEAN 1",
+      "YAKBOUB MANSOUR"
+    ],
+    "RABAT_2": [
+      "CTR HASSANE",
+      "EL KAIRA",
+      "EL KAIRA 2",
+      "HAY SALAM SALE",
+      "HAY SINARRI",
+      "MABILLA",
+      "MADINAT SALA JADIDA",
+      "NAHDA + TAKADOUM",
+      "SALA JADIDA 2",
+      "SALA JADIDA KARIA",
+      "TAWARKA HASSAN",
+      "YOUSSOFIA"
+    ],
+    "SALE_1": [
+      "ABOUAB SALA",
+      "BOUKNADALE",
+      "DAR AL BAHR",
+      "DAR LHAMRA",
+      "HAY CHMAOU",
+      "HAY RAHMA",
+      "HAY RAHMA ABE",
+      "HAY RAHMA SECTEUR CD",
+      "MDINA SALE",
+      "SAID HAJI",
+      "SIDI MOUSSA CENTRALE",
+      "SIDI MOUSSA SALE"
+    ],
+    "SALE_2": [
+      "EL BATTANA",
+      "EL KAIRA 3",
+      "EL OUADE",
+      "FROUKI / HAY KARIMA",
+      "HAY INBIRRATE",
+      "HAY INBIRRATE 2",
+      "HAY SALAM IDAFI",
+      "LAAYAYDA",
+      "MARJANE /HAY KARIMA",
+      "MOULAY ISMAIL",
+      "SALE CENTRE 2",
+      "TABRIKTE",
+      "TABRIKTE 2"
+    ],
+    "TEMARA_CENTRE": [
+      "AMALE 4+ GR 5",
+      "DOUAR EL KOURA",
+      "EL AMALE 5+ MASSIRA",
+      "EL GUICH",
+      "EL HARHOURRA",
+      "EL MASSIRA 1",
+      "EL MASSIRA 2",
+      "EL WIFAK",
+      "FOWARAT HAY ABBADI",
+      "HAY FATH AL MANZAH",
+      "MAAMOURA",
+      "TMARA CENTRE"
+    ],
+    "TEMARA_EXT": [
+      "AIN AAOUDA",
+      "AIN AAOUDA 2",
+      "AIN ATIK",
+      "AIN ATIK 2",
+      "EL NOOR",
+      "EL SKHIRAT",
+      "EL SKHIRAT 2",
+      "EL SKHIRAT 3",
+      "MARS LKHAIR",
+      "SIDI YAHYA ZAIRE",
+      "TAMESSNAA",
+      "TAMESSNAA 2"
+    ]
+  },
+  "TAN": {
+    "TAN_SUP1": [
+      "SUP_AAOUAMA/JIRARI SUP",
+      "SUP_AHLEN SUP",
+      "SUP_ARD DAWLA SUP",
+      "SUP_BOUKHALEF SUP",
+      "SUP_EL KAOUASSIM SUP",
+      "SUP_GUEZNAYA SUP",
+      "SUP_LALA CHAFIA SUP",
+      "SUP_MALABATA SUP",
+      "SUP_MARJAN-MOSTAKBAL SUP",
+      "SUP_MESNANA",
+      "SUP_MOUJAHIDINE SUP",
+      "SUP_NEJMA SUP",
+      "SUP_SOUANI/MERCHANE SUP"
+    ],
+    "TANGER_EXT": [
+      "ASSILA 1",
+      "ASSILA 2/OUAD LAW",
+      "CHEFCHAOUEN",
+      "GAZNAYA",
+      "GAZNAYA NORD",
+      "GZENAYA",
+      "HAJR NHAL",
+      "KSAR SGHIR WINWICH",
+      "LARACHE NORD",
+      "LARACHE SUD",
+      "MARJANE",
+      "TANGER BALIYA NORD",
+      "TANGER BALYA"
+    ],
+    "TANGER1": [
+      "ARD DAWLA",
+      "BEN DIBANE",
+      "BENKIRANE/CHARF",
+      "BRENSE 2",
+      "CENTRE VILLE TANGER",
+      "DCHAR AWAMA",
+      "JBEL KBIR/AIN HAYANI",
+      "MARJANE / MOUSTAKBAL",
+      "MERS /SIDI DRISS",
+      "MGHOUGHA",
+      "NEJMA + PLAYA",
+      "ZEMOURI"
+    ],
+    "TANGER2": [
+      "BELLE VUE",
+      "BRANESS 3 /ACHEKAR",
+      "CASABARATA/HAY JDID",
+      "EL KAOUASSIM",
+      "HAWMA WARD",
+      "LALA CHAFIA",
+      "MERCHANE/SABILA JMAA",
+      "MESNANA",
+      "MOJAMA3 / AHLAN",
+      "MOUADIFINE / ZAWDIYA",
+      "MSALLA 1",
+      "ZONE INDUSTRIEL"
+    ],
+    "TETOUAN": [
+      "FNIDEQ 1",
+      "FNIDEQ 2",
+      "HMAMA AIN KHABOZ",
+      "JAMA3 MEZOUAK SAMSA",
+      "JBEL DERSSA",
+      "MARTIL 1",
+      "MARTIL 2",
+      "MDIQ 1",
+      "MDIQ 2",
+      "MHANECH 1et2",
+      "TABOLA / KHANDAK ZRBOH",
+      "TABOLA / ZERBOH",
+      "TWILA3"
+    ]
   }
 };
 
@@ -257,36 +1223,41 @@ const productGroups={
 /* ===========================================================
    Navigation entre sections
 =========================================================== */
-function passerSection1(){
+function passerSection1() {
   // Réinitialiser les erreurs visuelles
   document.querySelectorAll('.field').forEach(f => f.classList.remove('error'));
 
   let erreur = false;
 
+  const nomDev = document.getElementById('nomdev').value.trim();
   const siteOk = siteSel.value.trim() !== '';
   const secOk = secteurSel.value.trim() !== '';
   const trnOk = [...tourneeZone.querySelectorAll('.chip.selected')].length > 0;
 
-  // Vérification et surlignage
-  if(!siteOk){
+  // Vérifications
+  if (nomDev === '') {
+    document.getElementById('nomdev').closest('.field').classList.add('error');
+    erreur = true;
+  }
+  if (!siteOk) {
     siteSel.closest('.field').classList.add('error');
     erreur = true;
   }
-  if(!secOk){
+  if (!secOk) {
     secteurSel.closest('.field').classList.add('error');
     erreur = true;
   }
-  if(!trnOk){
+  if (!trnOk) {
     tourneeZone.closest('.field').classList.add('error');
     erreur = true;
   }
 
-  if(erreur){
-    alert("⚠️ Merci de remplir toutes les informations obligatoires (Site, Secteur et au moins une Tournée).");
+  if (erreur) {
+    alert("⚠️ Merci de remplir tous les champs obligatoires : Responsable, Site, Secteur et au moins une Tournée.");
     return;
   }
 
-  // Si tout est OK → passer à la section suivante
+  // Passage à la section suivante
   document.querySelector('.s1').classList.add('hidden');
   document.querySelector('.s2').classList.remove('hidden');
 }
@@ -374,6 +1345,21 @@ function ajouterVisite(){
           </div>
           <div class="field"><label>TEL</label><input type="text" name="tel_${visitIdx}" inputmode="tel" placeholder="06XXXXXXXX"></div>
         </div>
+<!-- Type client -->
+<div class="field">
+  <label>Type client *</label>
+  <div class="choices" id="type_client_${visitIdx}">
+    ${["AG","SUP","FS","DL","HRI","BUVETTE","BT","Autre"].map(t=>`
+      <span class="chip interactive" data-value="${t}" onclick="selectTypeClient(this, ${visitIdx})">${t}</span>
+    `).join('')}
+  </div>
+</div>
+
+<!-- Zone texte si “Autre” -->
+<div class="field" id="type_client_autre_field_${visitIdx}" style="display:none;">
+  <label>Précisez *</label>
+  <input type="text" id="type_client_autre_${visitIdx}" placeholder="Précisez le type de client">
+</div>
 
         <div class="row">
           <div class="field"><label>Latitude</label><input type="text" id="lat_${visitIdx}" class="readonly" readonly></div>
@@ -417,7 +1403,7 @@ function ajouterVisite(){
 <div class="field">
   <label>Où est-ce que vous faites vos achats ? *</label>
   <div id="achat_choices_${visitIdx}" class="choices">
-    ${["Grossiste","Atacadao","Ambulant","Autre"].map(a=>`
+    ${["Excelissia","Grossiste","Atacadao","Ambulant","Autre"].map(a=>`
       <span class="chip interactive" data-value="${a}" onclick="toggleAchatChip(this, ${visitIdx})">${a}</span>
     `).join('')}
   </div>
@@ -449,7 +1435,7 @@ function ajouterVisite(){
         </div>
 
         <hr class="sep">
-        <h3>6) Observation marché</h3>
+   
       <!-- 6) Observation marché -->
 <hr class="sep">
 <h3>6) Observation marché</h3>
@@ -475,19 +1461,23 @@ function ajouterVisite(){
           </div>
         </div>
 
-        <div class="field">
-          <label>Disponibilité activité – ajouter des produits (par groupe)</label>
-          <div class="choices" id="activites_${visitIdx}">
-            ${Object.keys(productGroups).map(g=>`<span class="chip interactive" data-group="${g}" onclick="ajouterProduits('${g}', ${visitIdx}, this)">${g}</span>
-`).join('')}
-          </div>
-          <div class="help">Clique un groupe (EXCELO, BE, PAT, …) pour charger ses produits. Les nouveaux produits s’ajoutent **en haut** sans effacer ceux déjà choisis.</div>
-        </div>
+    <hr class="sep">
+<h3>7) Disponibilité activité</h3>
 
-        <div class="field">
-          <label>Produits disponibles sélectionnés</label>
-          <div id="produits_${visitIdx}" class="choices"></div>
-        </div>
+<div class="field">
+  <label>Ajouter des produits (par groupe)</label>
+  <div class="choices" id="activites_${visitIdx}">
+    ${Object.keys(productGroups).map(g=>`
+      <span class="chip interactive" data-group="${g}" onclick="ajouterProduits('${g}', ${visitIdx}, this)">${g}</span>
+    `).join('')}
+  </div>
+  <div class="help">Clique un groupe (EXCELO, BE, PAT, …) pour charger ses produits. Les nouveaux produits s’ajoutent **en haut** sans effacer ceux déjà choisis.</div>
+</div>
+
+<div class="field">
+  <label>Produits disponibles sélectionnés</label>
+  <div id="produits_${visitIdx}" class="choices"></div>
+</div>
 
         <hr class="sep">
         <h3>7) Observation PLV</h3>
@@ -502,7 +1492,7 @@ function ajouterVisite(){
         <div class="field" id="plv_detail_${visitIdx}" style="display:none">
           <label>Type PLV</label>
           <div class="choices">
-            ${["Présentoir sol","Présentoir comptoir","Habillage étagère"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
+            ${["Présentoir sol","Présentoir PICKERS","Présentoir TOT'S","Habillage étagère"].map(t=>`<span class="chip" onclick="toggleChip(this)">${t}</span>`).join('')}
           </div>
         </div>
       </div>
@@ -534,18 +1524,34 @@ function toggleChip(el) {
 }
 
 function blocVendeurLivreur(i){
-  // BU standard + “LIVREUR” présenté de la même manière
-  const buRows = ["EXCELO","BE","NEGOCE","CHOCOLAT","LIVREUR"].map(bu=>`
-    <div class="vendor-field">
-      <span class="main">${bu}</span>
-      <span class="hint">Visite</span>
-      <select name="visit_${bu.toLowerCase()}_${i}"><option>Oui</option><option>Non</option></select>
-      <span class="hint">Satisfaction</span>
-      <select name="satisfaction_${bu.toLowerCase()}_${i}"><option>Oui</option><option>Non</option></select>
+  const buList = ["EXCELO","BE","NEGOCE","CHOCOLAT","LIVREUR"];
+  return `
+    <div class="vendor-grid">
+      ${buList.map(bu => `
+        <div class="vendor-field">
+          <span class="main">${bu}</span>
+
+          <div class="subgroup">
+            <span class="hint">Visite</span>
+            <div class="choices mini" id="visit_${bu.toLowerCase()}_${i}">
+              <span class="chip" onclick="toggleYesNo(this,'visit_${bu.toLowerCase()}_${i}')">Oui</span>
+              <span class="chip" onclick="toggleYesNo(this,'visit_${bu.toLowerCase()}_${i}')">Non</span>
+            </div>
+          </div>
+
+          <div class="subgroup">
+            <span class="hint">Satisfaction</span>
+            <div class="choices mini" id="satisfaction_${bu.toLowerCase()}_${i}">
+              <span class="chip" onclick="toggleYesNo(this,'satisfaction_${bu.toLowerCase()}_${i}')">Oui</span>
+              <span class="chip" onclick="toggleYesNo(this,'satisfaction_${bu.toLowerCase()}_${i}')">Non</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
     </div>
-  `).join('');
-  return `<div class="vendor-grid">${buRows}</div>`;
+  `;
 }
+
 
 /* ====== Logiques d’affichage (Actif / Nouveau client / PLV) ====== */
 function toggleActif(sel,i){
@@ -624,56 +1630,78 @@ function toggleConcuChip(el, i){
 function togglePLV(sel,i){
   document.getElementById(`plv_detail_${i}`).style.display = (sel.value==='Oui')?'block':'none';
 }
+function selectTypeClient(el, i){
+  const zone = document.getElementById(`type_client_${i}`);
+  const chips = zone.querySelectorAll('.chip');
+  chips.forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+
+  const autreSel = el.dataset.value === "Autre";
+  const autreField = document.getElementById(`type_client_autre_field_${i}`);
+  autreField.style.display = autreSel ? 'block' : 'none';
+  if(!autreSel) document.getElementById(`type_client_autre_${i}`).value = '';
+}
+function toggleYesNo(el, groupId){
+  const group = document.getElementById(groupId);
+  if(!group) return;
+  group.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
 
 /* ====== Produits dynamiques par activité ====== */
-function ajouterProduits(groupe, i, chipEl){
-  if(chipEl) chipEl.classList.toggle('selected');
-  const zone=document.getElementById(`produits_${i}`);
-  const existants=new Set([...zone.querySelectorAll('input[type="checkbox"]')].map(cb=>cb.value));
-  const nouveaux=(productGroups[groupe]||[]).filter(p=>!existants.has(p));
+function ajouterProduits(groupe, i, chipEl) {
+  // Met le groupe cliqué en bleu (les autres en blanc)
+  const zoneGroupes = document.getElementById(`activites_${i}`);
+  if (zoneGroupes) zoneGroupes.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  if (chipEl) chipEl.classList.add('selected');
 
-  // Ajouter en haut (ordre inversé pour que le 1er du groupe reste au-dessus)
-  nouveaux.reverse().forEach(p=>{
-    const id=`${groupe}_${i}_${p.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'')}`;
-    const span=document.createElement('span');
-   span.className = 'chip interactive';  // blanc par défaut
-  span.innerHTML = `
-  <input type="checkbox" id="${id}" value="${p}" checked hidden>
-  <span>${p}</span>
-`;
-    // Permettre de (dé)sélectionner en cliquant
-    span.addEventListener('click', e=>{
-      if(e.target.tagName.toLowerCase()==='input') return;
-      const cb=span.querySelector('input');
-      cb.checked=!cb.checked;
-      span.classList.toggle('selected', cb.checked);
+  // Zone produits
+  const zone = document.getElementById(`produits_${i}`);
+  if (!zone) return;
+
+  // Évite les doublons
+  const existants = new Set([...zone.querySelectorAll('input[type="checkbox"]')].map(cb => cb.value));
+  const nouveaux = (productGroups[groupe] || []).filter(p => !existants.has(p));
+
+  // 🔹 Ajoute une ligne séparatrice AVANT les nouveaux produits
+  if (zone.children.length > 0 && nouveaux.length > 0) {
+    const sep = document.createElement('div');
+    sep.style.width = "100%";
+    sep.style.borderTop = "1px dashed var(--line)";
+    sep.style.margin = "6px 0 8px 0";
+    sep.style.flexBasis = "100%";  // ✅ rend visible même dans un conteneur flex
+    zone.prepend(sep);
+  }
+
+  // 🔹 Ajoute les nouveaux produits en haut
+  nouveaux.reverse().forEach(p => {
+    const id = `${groupe}_${i}_${p.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_\-]/g,'')}`;
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.innerHTML = `
+      <input type="checkbox" id="${id}" value="${p}" hidden>
+      <span>${p}</span>
+    `;
+    chip.addEventListener('click', () => {
+      const cb = chip.querySelector('input');
+      cb.checked = !cb.checked;
+      chip.classList.toggle('selected', cb.checked);
     });
-    zone.prepend(span);
+    zone.prepend(chip);
   });
 }
 
+
 /* ====== GPS pour nouveau client ====== */
-function getLocation(idx) {
-  if (!navigator.geolocation) {
-    alert("La géolocalisation n’est pas supportée par ce navigateur.");
-    return;
-  }
+function localiser(i){
+  if(!navigator.geolocation){ alert("La géolocalisation n'est pas supportée."); return; }
   navigator.geolocation.getCurrentPosition(
-    pos => {
-      // Fill the latitude and longitude fields for the given idx
-      document.getElementById('lat_' + idx).value = pos.coords.latitude.toFixed(6);
-      document.getElementById('long_' + idx).value = pos.coords.longitude.toFixed(6);
+    pos=>{
+      document.getElementById(`lat_${i}`).value  = pos.coords.latitude.toFixed(6);
+      document.getElementById(`long_${i}`).value = pos.coords.longitude.toFixed(6);
     },
-    err => {
-      // Handle geolocation errors
-      alert("Erreur GPS : " + err.message);
-    },
-    {
-      enableHighAccuracy: true,
-      // Optional: set a timeout (in ms) and a maximumAge for cached positions
-      timeout: 10000, // 10 seconds
-      maximumAge: 0
-    }
+    err=>alert("Erreur GPS : "+err.message),
+    {enableHighAccuracy:true, timeout:10000}
   );
 }
 
@@ -696,7 +1724,50 @@ document.getElementById('questionnaire').addEventListener('submit', e=>{
   console.log('Header', {date:document.getElementById('datejour').value, dev:document.getElementById('nomdev').value, id:document.getElementById('idjournee').value});
   console.log('Section 1', data);
 });
+  /* ==========================================================
+   ENVOI DES DONNÉES VERS GOOGLE SHEETS
+========================================================== */
+function collectFormData() {
+  const data = {};
+  data["Date du jour"] = document.getElementById("datejour")?.value || "";
+  data["ID Journée"] = document.getElementById("idjournee")?.value || "";
+  data["Responsable"] = document.getElementById("nomdev")?.value || "";
+  data["Site"] = document.getElementById("site")?.value || "";
+  data["Secteur"] = document.getElementById("secteur")?.value || "";
+  data["Tournée(s)"] = [...document.querySelectorAll("#tournee-zone .chip.selected")]
+    .map(c => c.dataset.value)
+    .join(", ") || "—";
+  data["Business Unit(s)"] = [...document.querySelectorAll("#bu_choices .chip.selected")]
+    .map(c => c.textContent.trim())
+    .join(", ") || "—";
+  data["Méthode"] = document.getElementById("methode")?.value || "—";
+  data["Objectif(s) terrain"] = [...document.querySelectorAll("#objectifs_zone .chip.selected")]
+    .map(c => c.textContent.trim())
+    .join(", ") || "—";
+  data["Nombre de visites"] = document.querySelectorAll(".visit").length;
+  return data;
+}
+
+  function envoyerDonneesGoogleSheet() {
+  const data = collectFormData();
+  const webhook = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbx02nyzL2-vD0AeY1acIviIGFeH9w-yW689QH_Ujag_1TcRjzCmFCaqjGIaDxZ4vBot/exec"; // ← à remplacer
+
+  fetch(webhook, {
+    method: "POST",
+    body: JSON.stringify(data),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(response => response.text())
+  .then(result => {
+    alert("✅ Données envoyées avec succès !");
+    console.log("Réponse Google Apps Script:", result);
+  })
+  .catch(error => {
+    console.error("Erreur d’envoi :", error);
+    alert("❌ Erreur lors de l’envoi des données !");
+  });
+}
+
 </script>
 </body>
 </html>
-
