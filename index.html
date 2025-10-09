@@ -1812,13 +1812,6 @@ function validerChampsVisibles() {
    ENVOI VERS GOOGLE SHEETS
 ========================================================== */
 function envoyerDonneesGoogleSheet(event) {
-  if (event) event.preventDefault(); // bloque l'envoi HTML par défaut
-
-  // ✅ Validation stricte de tous les champs visibles requis
-  if (!validerChampsVisibles()) {
-    console.warn("⛔ Envoi annulé : champs obligatoires manquants");
-    return false; // Empêche tout envoi
-  }
 
   const data = collectFormData();
   const webhook = "https://script.google.com/macros/s/AKfycbyEfPBjFJ7dHzXu_BSAVzzhNEuwP7UMcGUrULe-K4UL3w48U8YYeKvd5xqF9O7DonJS/exec";
@@ -1890,68 +1883,10 @@ function definirChampsObligatoires(i, actif, nouveau) {
   }
 }
 
-/* ==========================================================
-   MISE À JOUR DES BLOCS (Actif / Nouveau Client)
-========================================================== */
-function toggleActif(sel, i) {
-  const v = sel.value;
-  const blocCode = document.getElementById(`bloc_code_${i}`);
-  const blocExec = document.getElementById(`bloc_exec_${i}`);
-  const blocNew  = document.getElementById(`bloc_new_${i}`);
-  const newClientWrap = document.getElementById(`newclient_wrap_${i}`);
-
-  if (v === 'Oui') {
-    newClientWrap.style.display = 'none';
-    blocNew.style.display = 'none';
-    blocCode.style.display = 'block';
-    blocExec.style.display = 'block';
-    definirChampsObligatoires(i, "Oui", "");
-  } 
-  else if (v === 'Non') {
-    newClientWrap.style.display = 'block';
-    blocNew.style.display = 'none';
-    blocCode.style.display = 'none';
-    blocExec.style.display = 'none';
-    definirChampsObligatoires(i, "Non", "");
-  } 
-  else {
-    newClientWrap.style.display = 'none';
-    blocNew.style.display = 'none';
-    blocCode.style.display = 'none';
-    blocExec.style.display = 'none';
-    definirChampsObligatoires(i, "", "");
-  }
-}
-
-function toggleNewClient(sel, i) {
-  const v = sel.value;
-  const blocNew  = document.getElementById(`bloc_new_${i}`);
-  const blocExec = document.getElementById(`bloc_exec_${i}`);
-  const blocCode = document.getElementById(`bloc_code_${i}`);
-
-  if (v === 'Oui') {
-    blocNew.style.display = 'block';
-    blocCode.style.display = 'none';
-    blocExec.style.display = 'none';
-    definirChampsObligatoires(i, "Non", "Oui");
-  } 
-  else if (v === 'Non') {
-    blocNew.style.display = 'none';
-    blocCode.style.display = 'block';
-    blocExec.style.display = 'block';
-    definirChampsObligatoires(i, "Non", "Non");
-  } 
-  else {
-    blocNew.style.display = 'none';
-    blocCode.style.display = 'none';
-    blocExec.style.display = 'none';
-    definirChampsObligatoires(i, "", "");
-  }
-}
-
 </script>
 </body>
 </html>
+
 
 
 
